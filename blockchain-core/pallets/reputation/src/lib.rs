@@ -19,9 +19,11 @@ pub mod pallet {
         Eq,
         RuntimeDebug,
         TypeInfo,
-        MaxEncodedLen
+        MaxEncodedLen,
+        Default
     )]
     pub enum ContributionType {
+        #[default]
         Construction,
         Agriculture,
         Energy,

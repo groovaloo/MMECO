@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "pallets/reputation",
+    "pallets/processes",
     "runtime",
     "node"
 ]

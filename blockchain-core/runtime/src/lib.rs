@@ -71,9 +71,16 @@ impl reputation::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
 
+impl processes::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type MaxParticipants = frame_support::traits::ConstU32<100>;
+    type RootOrigin = frame_system::EnsureRoot<Self::AccountId>;
+}
+
 frame_support::construct_runtime!(
     pub enum Runtime {
         System: frame_system,
         Reputation: reputation,
+        Processes: processes,
     }
 );
