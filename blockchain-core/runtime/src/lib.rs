@@ -1,9 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::{
-    parameter_types,
-    traits::{Everything, ConstU32},
-};
+use frame_support::traits::Everything;
+use frame_support::parameter_types;
 use sp_runtime::{
     generic, traits::{BlakeTwo256, IdentityLookup},
     MultiSignature, MultiAddress, create_runtime_str,
@@ -25,28 +23,6 @@ parameter_types! {
         transaction_version: 1,
         state_version: 1,
     };
-}
-
-#[frame_support::runtime]
-pub mod runtime {
-    #[runtime::runtime]
-    #[runtime::derive(
-        RuntimeCall, 
-        RuntimeEvent, 
-        RuntimeError, 
-        RuntimeOrigin, 
-        RuntimeFreezeReason, 
-        RuntimeHoldReason, 
-        RuntimeSlashReason, 
-        RuntimeTask
-    )]
-    pub struct Runtime;
-
-    #[runtime::pallet_index(0)]
-    pub type System = frame_system;
-
-    #[runtime::pallet_index(1)]
-    pub type Reputation = reputation;
 }
 
 impl frame_system::Config for Runtime {
@@ -72,15 +48,18 @@ impl frame_system::Config for Runtime {
     type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
     type OnSetCode = ();
-    type MaxConsumers = ConstU32<16>;
-    type RuntimeTask = RuntimeTask;
-    type SingleBlockMigrations = ();
-    type MultiBlockMigrator = ();
-    type PreInherents = ();
-    type PostInherents = ();
-    type PostTransactions = ();
+    type MaxConsumers = frame_support::traits::ConstU32<16>;
+    type RuntimeTask = ();
 }
 
 impl reputation::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
+
+// Macro clássica que garante a compatibilidade P2P e evita o erro de metadados
+frame_support::construct_runtime!(
+    pub enum Runtime {
+        System: frame_system,
+        Reputation: reputation,
+    }
+);
