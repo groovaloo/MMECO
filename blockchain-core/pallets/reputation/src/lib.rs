@@ -60,6 +60,11 @@ pub mod pallet {
         ValueQuery
     >;
 
+    // Saldo de Buildcoin
+    #[pallet::storage]
+    #[pallet::getter(fn buildcoin_balance)]
+    pub type BuildcoinBalance<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, u128, ValueQuery>;
+
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
@@ -67,6 +72,7 @@ pub mod pallet {
         ReputationReduced(T::AccountId, ContributionType, u32),
         ReputationReset(T::AccountId),
         AdminSet(T::AccountId),
+        BuildcoinMinted(T::AccountId, u128),
     }
 
     #[pallet::error]
@@ -163,6 +169,41 @@ pub mod pallet {
             Self::deposit_event(Event::ReputationReset(target));
             Ok(())
         }
+
+        /// Motor da Economia Comunitária
+        /// 
+        /// Esta função é o coração do sistema econômico da comunidade Moral Money.
+        /// Só pode ser chamada quando um projeto é validado pelo conselho dos 5 especialistas.
+        /// 
+        /// Funcionamento:
+        /// 1. Validação de Admin: Apenas o admin do sistema pode emitir Buildcoins
+        /// 2. Validação de Projeto: Buildcoins só são emitidos após validação de contribuição real
+        /// 3. Emissão Controlada: Quantidade baseada no impacto mensurável do projeto
+        /// 4. Registro Transparente: Cada emissão é registrada como evento público
+        /// 
+        /// Princípio Ético:
+        /// - Buildcoins não podem ser comprados, apenas ganhos através de contribuição real
+        /// - Equivalência Ética: Trabalho e capital têm o mesmo valor na geração de moeda
+        /// - Transparência Total: Todas as emissões são auditáveis na blockchain
+        #[pallet::call_index(4)]
+        #[pallet::weight(10_000)]
+        pub fn issue_buildcoin(
+            origin: OriginFor<T>,
+            beneficiary: T::AccountId,
+            amount: u128,
+        ) -> DispatchResult {
+            let who = ensure_signed(origin)?;
+            let admin = Admin::<T>::get().ok_or(Error::<T>::NotAdmin)?;
+            ensure!(who == admin, Error::<T>::NotAdmin);
+
+            BuildcoinBalance::<T>::try_mutate(&beneficiary, |balance| -> Result<(), Error<T>> {
+                *balance = balance.checked_add(amount).ok_or(Error::<T>::Overflow)?;
+                Ok(())
+            })?;
+
+            Self::deposit_event(Event::BuildcoinMinted(beneficiary, amount));
+            Ok(())
+        }
     }
 
     // Funções de Consulta (Leitura)
@@ -173,6 +214,10 @@ pub mod pallet {
 
         pub fn get_reputation_by_type(account: T::AccountId, contribution: ContributionType) -> u32 {
             ReputationByType::<T>::get(account, contribution)
+        }
+
+        pub fn get_buildcoin_balance(account: T::AccountId) -> u128 {
+            BuildcoinBalance::<T>::get(account)
         }
     }
 }

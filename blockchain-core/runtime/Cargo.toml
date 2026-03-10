@@ -7,7 +7,6 @@ edition = "2021"
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
 
-# Forçamos a versão 38/34/39 que é estável entre si
 frame-support = { version = "38.0.0", default-features = false }
 frame-system = { version = "38.0.0", default-features = false }
 sp-runtime = { version = "39.0.0", default-features = false }
