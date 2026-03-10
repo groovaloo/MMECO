@@ -30,6 +30,46 @@ pub mod pallet {
         Logistics,
     }
 
+    #[derive(
+        Encode,
+        Decode,
+        Clone,
+        Copy,
+        PartialEq,
+        Eq,
+        RuntimeDebug,
+        TypeInfo,
+        MaxEncodedLen
+    )]
+    pub enum SubContributionType {
+        // Construção
+        Painting,
+        Carpentry,
+        Masonry,
+        Electrical,
+        Plumbing,
+        // Agricultura
+        CropFarming,
+        Livestock,
+        Horticulture,
+        // Energia
+        Solar,
+        Wind,
+        Hydro,
+        // Saúde
+        Medical,
+        Nursing,
+        FirstAid,
+        // Logística
+        Transport,
+        Storage,
+        Distribution,
+        // Governação
+        Coordination,
+        Mediation,
+        Planning,
+    }
+
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>>
@@ -218,6 +258,76 @@ pub mod pallet {
 
         pub fn get_buildcoin_balance(account: T::AccountId) -> u128 {
             BuildcoinBalance::<T>::get(account)
+        }
+
+        /// Função de Auditoria para IA
+        /// 
+        /// Seleciona os 5 membros com maior reputação em um domínio específico.
+        /// Esta função é projetada para ser chamada pela IA (Ollama/Llama3) para formar
+        /// conselhos de especialistas em decisões técnicas.
+        /// 
+        /// Parâmetros:
+        /// - contribution_type: Domínio específico (ex: Construction, Agriculture, etc.)
+        /// 
+        /// Retorno:
+        /// - Vec<(T::AccountId, u32)>: Lista de até 5 pares (conta, reputação) ordenados por reputação decrescente
+        /// 
+        /// Uso:
+        /// Quando a IA precisar formar um conselho de 5 especialistas para validar um projeto
+        /// em um domínio específico, esta função fornece os 5 membros mais qualificados.
+        /// 
+        /// Exemplo:
+        /// - Para projetos de 'Pintura' (subdomínio de Construction), usar ContributionType::Construction
+        /// - Para projetos de 'CropFarming' (subdomínio de Agriculture), usar ContributionType::Agriculture
+        pub fn select_top_experts(contribution_type: ContributionType) -> Vec<(T::AccountId, u32)> {
+            // Coleta todos os pares (conta, reputação) para o domínio especificado
+            let mut experts: Vec<(T::AccountId, u32)> = Vec::new();
+            
+            // Itera sobre o StorageDoubleMap para encontrar todos os registros do domínio
+            for (account, domain, reputation) in ReputationByType::<T>::iter() {
+                if domain == contribution_type {
+                    experts.push((account, reputation));
+                }
+            }
+
+            // Ordena por reputação em ordem decrescente
+            experts.sort_by(|a, b| b.1.cmp(&a.1));
+
+            // Retorna os 5 melhores (ou menos se houver menos de 5)
+            experts.into_iter().take(5).collect()
+        }
+
+        /// Validação de Conselho de 5 Membros
+        /// 
+        /// Função auxiliar para validar se um conselho de 5 membros é composto pelos
+        /// especialistas mais qualificados em um domínio específico.
+        /// 
+        /// Parâmetros:
+        /// - contribution_type: Domínio da especialização
+        /// - council_members: Lista de contas que formam o conselho
+        /// 
+        /// Retorno:
+        /// - bool: true se o conselho está composto pelos top 5, false caso contrário
+        pub fn validate_council(contribution_type: ContributionType, council_members: &[T::AccountId]) -> bool {
+            if council_members.len() != 5 {
+                return false;
+            }
+
+            // Obtém os top 5 especialistas
+            let top_experts = Self::select_top_experts(contribution_type);
+            
+            if top_experts.len() < 5 {
+                return false;
+            }
+
+            // Verifica se todos os membros do conselho estão entre os top 5
+            for member in council_members {
+                if !top_experts.iter().any(|(account, _)| account == member) {
+                    return false;
+                }
+            }
+
+            true
         }
     }
 }
