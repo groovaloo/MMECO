@@ -1,0 +1,26 @@
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+# Rust build artifacts
+target/
+**/target/
+
+# Cargo
+Cargo.lock
+
+# macOS
+.DS_Store
+
+# VS Code local settings
+.vscode/
+
+# Python cache (ai-agents)
+__pycache__/
+*.pyc
+
+# Temporary archives
+*.zip
+
+# Logs
+*.log
