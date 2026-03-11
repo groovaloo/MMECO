@@ -1,165 +1,150 @@
-# Project Updates
+# UPDATES — Registo de Erros e Soluções
 
-## 2026-03
+---
 
-- Initial repository cleanup
-- Removal of duplicated documentation
-- Creation of constitutional documentation hierarchy
-- Basic Substrate project structure created
+## [2026-03-11] Integração do pallet `projects` com `reputation`
 
-## 2026-03-09 — Repository cleanup and documentation structure
+### Contexto
+O pallet `pallet-projects` precisava importar tipos (`ContributionType`, `SubContributionType`) do pallet `reputation` e referenciar o seu `Config` trait. O projeto não compilava com vários erros encadeados.
 
-### Problem
-The repository accumulated duplicated documentation in two locations:
+---
 
-docs/
-blockchain-core/docs/
+### Erro 1 — `E0432`/`E0433`: unresolved import `super::reputation`
 
-This created confusion about which documents were authoritative.
+**Ficheiros:** `pallets/projects/src/lib.rs`
 
-### Resolution
-Removed the duplicated documentation inside:
+**Causa:**
+Em Substrate, pallets são crates independentes. `super::reputation` não existe porque `reputation` não é um módulo filho de `projects` — é uma crate separada. As tentativas com `crate::reputation` e `self::reputation` falham pelo mesmo motivo.
 
-blockchain-core/docs
+**Solução:**
+1. Adicionar o pallet como dependência no `Cargo.toml` do projects:
+   ```toml
+   pallet-reputation = { package = "reputation", path = "../reputation", default-features = false }
+   ```
+   O `package = "reputation"` é necessário porque o nome do crate em `Cargo.toml` do reputation é `reputation`, mas queremos referenciá-lo como `pallet-reputation` (convenção Substrate).
 
-All institutional documentation now lives exclusively in:
+2. Importar no `lib.rs` usando o nome do crate com underscore:
+   ```rust
+   pub use pallet_reputation::pallet::{ContributionType, SubContributionType};
+   ```
 
-docs/
+3. Adicionar ao workspace em `blockchain-core/Cargo.toml`:
+   ```toml
+   "pallets/projects",
+   ```
 
-### Constitutional hierarchy created
+---
 
-docs/constitution/
+### Erro 2 — `E0277`: `Vec<u8>`, `Vec<AccountId>`, `Vec<u64>` não implementam `MaxEncodedLen`
 
-- constitution.md
-- principles.md
-- community-model.md
-- reputation-model.md
-- architecture.md
+**Ficheiros:** `pallets/projects/src/lib.rs`
 
-This establishes the rule:
+**Causa:**
+O FRAME exige que todos os tipos em storage implementem `MaxEncodedLen`. `Vec` tem tamanho dinâmico e não pode satisfazer este trait. As structs `Project` e `ProjectParticipant` tinham `#[derive(MaxEncodedLen)]` mas usavam `Vec`.
 
-Constitution → System Model → Algorithms → Blockchain Implementation
+**Solução:**
+Substituir todos os `Vec` por `BoundedVec` com limites definidos como constantes:
+```rust
+pub const MAX_NAME_LEN: u32 = 100;
+pub const MAX_DESC_LEN: u32 = 500;
+pub const MAX_PARTICIPANTS: u32 = 256;
+pub const MAX_PROJECTS_PER_STATUS: u32 = 10_000;
 
-### Additional cleanup
+// Nas structs:
+pub name: BoundedVec<u8, ConstU32<MAX_NAME_LEN>>,
+pub description: BoundedVec<u8, ConstU32<MAX_DESC_LEN>>,
+pub participants: BoundedVec<AccountId, ConstU32<MAX_PARTICIPANTS>>,
 
-Removed empty files:
+// No storage ProjectsByStatus:
+BoundedVec<u64, ConstU32<MAX_PROJECTS_PER_STATUS>>
+```
 
-- economia.md
-- governanca.md
-- manifesto.md
+Os parâmetros das extrinsics também passam a receber `BoundedVec` diretamente.
+Para inserir numa `BoundedVec` usa-se `try_push(...).map_err(|_| Error::<T>::TooManyX)?`.
 
-Added initial content to:
+---
 
-- README.md
-- UPDATES.md
+### Erro 3 — `E0308`: mismatched types em `block_number().into()`
 
-### Result
+**Ficheiros:** `pallets/projects/src/lib.rs`
 
-Clean repository structure:
+**Causa:**
+`<frame_system::Pallet<T>>::block_number()` retorna `BlockNumberFor<T>`, que é um tipo genérico. Não converte diretamente para `u64` com `.into()` porque o compilador não pode garantir que `BlockNumberFor<T>: Into<u64>`.
 
-ai-agents/
-blockchain-core/
-docs/
-frontend/
-scripts/
+**Solução:**
+```rust
+let block = <frame_system::Pallet<T>>::block_number();
+let created_at: u64 = block.try_into().unwrap_or(0u64);
+```
+`TryInto<u64>` está implementado para os tipos numéricos comuns usados como BlockNumber.
 
-Documentation hierarchy is now consistent and non-duplicated.
+---
 
-## 2026-03-10 — Substrate Dependencies Compatibility Issues
+### Erro 4 — Versões incompatíveis de `frame-support` (duas instâncias do mesmo crate)
 
-### Problem
-The project encountered critical dependency conflicts in the Substrate blockchain implementation:
+**Ficheiros:** `pallets/projects/Cargo.toml`
 
-- **frame_metadata_enabled error**: Indicated incompatible versions between sp-api, sp-runtime, and frame-support dependencies
-- **Version incompatibilities**: Different Cargo.toml files used conflicting Substrate versions (34.0.0, 35.0.0, 38.0.0, 39.0.0)
-- **Yanked versions**: Multiple attempts failed because versions 34.0.0, 33.0.0, 32.0.0, and 27.0.0 were marked as yanked on crates.io
-- **Missing versions**: sc-rpc-server versions 0.35.0, 0.34.0, 0.33.0, 0.32.0 do not exist in crates.io
+**Causa:**
+O pallet `projects` usava `frame-support 34.0.0` enquanto o `reputation` e o `runtime` usavam `38.x`. Em Rust, versões diferentes do mesmo crate são tipos completamente distintos — os traits de uma versão não são satisfeitos pelos tipos da outra. O erro manifestava-se como `Runtime: frame_system::pallet::Config` not satisfied.
 
-### Dependencies analyzed
+**Solução:**
+Alinhar todas as versões do `projects/Cargo.toml` com as usadas no `reputation` e no `runtime`:
+```toml
+frame-support = { version = "38.0.0", default-features = false }
+frame-system  = { version = "38.0.0", default-features = false }
+sp-runtime    = { version = "39.0.0", default-features = false }
+sp-io         = { version = "38.0.0", default-features = false }
+```
 
-**blockchain-core/runtime/Cargo.toml:**
-- frame-support: 38.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- frame-system: 38.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-runtime: 39.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-api: 34.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-core: 34.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-version: 37.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
+---
 
-**blockchain-core/node/Cargo.toml:**
-- sc-cli: 0.36.0 → 0.34.0 → 0.35.0 → 0.34.0 → 0.33.0 → 0.32.0 → 0.27.0
-- sc-service: 0.35.0 → 0.34.0 → 0.35.0 → 0.34.0 → 0.33.0 → 0.32.0 → 0.27.0
-- sc-network: 0.34.0 → 0.34.0 → 0.35.0 → 0.34.0 → 0.33.0 → 0.32.0 → 0.27.0
-- sc-rpc-server: 15.0.0 → 0.34.0 → 0.35.0 → 0.34.0 → 0.33.0 → 0.32.0 → 0.27.0
-- sp-core: 28.0.0 → 34.0.0 → 35.0.0 → 34.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-runtime: 30.0.0 → 34.0.0 → 35.0.0 → 34.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-api: 26.0.0 → 34.0.0 → 35.0.0 → 34.0.0 → 33.0.0 → 32.0.0 → 27.0.0
+### Erro 5 — `E0277`: `reputation::Pallet<Runtime>` não implementa `reputation::Config`
 
-**blockchain-core/pallets/reputation/Cargo.toml:**
-- frame-support: 38.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- frame-system: 38.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-std: 14.0.0 (consistent)
-- sp-core: 34.0.0 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-runtime: 39.0.5 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
-- sp-io: 38.0.2 → 34.0.0 → 35.0.0 → 33.0.0 → 32.0.0 → 27.0.0
+**Ficheiros:** `runtime/src/lib.rs`, `pallets/projects/src/lib.rs`
 
-### Attempts to resolve
+**Causa:**
+No runtime estava configurado `type Reputation = Reputation`, onde `Reputation` é o alias para `reputation::Pallet<Runtime>` gerado pelo `construct_runtime!`. Mas o bound no Config do pallet projects exigia `pallet_reputation::Config`, que está implementado para `Runtime`, não para `reputation::Pallet<Runtime>`.
 
-1. **Initial compatibility fix**: Standardized all dependencies to version 34.0.0
-2. **Version updates**: Progressively tried newer versions (35.0.0, 33.0.0, 32.0.0, 27.0.0)
-3. **Fixed version syntax**: Applied strict version pinning with = syntax for P2P offline compatibility
-4. **Vendor configuration**: Created .cargo/config.toml for cargo vendor support
+**Solução em dois passos:**
 
-### Current status
+1. No `lib.rs` do projects, o bound do associated type deve incluir `frame_system::Config`:
+   ```rust
+   type Reputation: frame_system::Config + pallet_reputation::Config;
+   ```
 
-All Cargo.toml files have been updated with:
-- Fixed version syntax (e.g., "=27.0.0")
-- Consistent version numbers across all files
-- Vendor configuration for offline compilation
+2. No `runtime/src/lib.rs`, passar `Runtime` (que implementa o Config) em vez do Pallet:
+   ```rust
+   impl pallet_projects::Config for Runtime {
+       type RuntimeEvent = RuntimeEvent;
+       type Reputation = Runtime;  // não "Reputation" (que é o Pallet)
+   }
+   ```
 
-However, the project still cannot compile due to:
-- Version 27.0.0 being yanked from crates.io
-- Missing sc-rpc-server versions in the 0.27.0 range
+---
 
-### Next steps required
+### Erro 6 — `pub use projects` no runtime não encontra o crate
 
-1. **Research available versions**: Identify which Substrate versions are actually available and not yanked
-2. **Use git dependencies**: Consider using git dependencies pointing to specific commits for stability
-3. **Alternative approach**: Consider using a different Substrate version range that is stable and available
-4. **Test compilation**: Once compatible versions are identified, test cargo build --release
+**Ficheiros:** `runtime/src/lib.rs`
 
-### Files modified
+**Causa:**
+O crate chama-se `pallet-projects` (com hífen). Em Rust, hífens tornam-se underscores no código. `pub use projects` procurava um crate chamado `projects` que não existe.
 
-- blockchain-core/runtime/Cargo.toml
-- blockchain-core/node/Cargo.toml  
-- blockchain-core/pallets/reputation/Cargo.toml
-- blockchain-core/.cargo/config.toml (created)
+**Solução:**
+```rust
+// Errado:
+pub use projects;
 
-### Impact
+// Correto:
+pub use pallet_projects;
 
-This dependency issue prevents the Moral Money blockchain from compiling and running, blocking all development and testing activities. The project requires stable, compatible Substrate dependencies to proceed.
+// E no construct_runtime!:
+Projects: pallet_projects,
 
-## 2026-03-10 — Substrate Dependency Resolution
+// E no impl:
+impl pallet_projects::Config for Runtime { ... }
+```
 
-### Problem resolved
+---
 
-The `cargo build` failure was caused by three compounding issues:
-
-1. **Yanked versions**: Versions 27.0.0–34.0.0 of `frame-support`, `frame-system`, `sp-runtime` etc. were yanked from crates.io
-2. **Vendor override blocking network**: `.cargo/config.toml` forced offline vendor mode, preventing resolution of any registry dependencies
-3. **Missing `frame_system::Config` associated types**: Newer versions added `SingleBlockMigrations`, `MultiBlockMigrator`, `PreInherents`, `PostInherents`, `PostTransactions`
-
-### Resolution
-
-**Files modified:**
-
-- `.cargo/config.toml` — removed vendor override; now uses crates.io directly
-- `Cargo.toml` (workspace) — added `[patch.crates-io]` section pointing to `polkadot-stable2412` git tag for future use
-- `pallets/reputation/Cargo.toml` — updated to compatible versions (frame-support 38.0.0, sp-runtime 39.0.0, sp-io 38.0.0)
-- `runtime/Cargo.toml` — updated to compatible versions (frame-support 38.0.0, sp-api 34.0.0, sp-core 34.0.0, sp-version 37.0.0)
-- `node/Cargo.toml` — removed unused sc-cli, sc-service, sc-network, sc-rpc-server, sp-api, sp-api-proc-macro, futures, serde, hyper dependencies (none used in main.rs)
-- `runtime/src/lib.rs` — added 5 missing associated types to `frame_system::Config` impl; fixed `RuntimeVersion` declaration and type aliases for `Block`, `Header`, `UncheckedExtrinsic`
-- `node/src/main.rs` — removed unused `sp_runtime` import
-
-### Result
-
-`cargo build` completes successfully with only deprecation warnings (constant weights) that are non-blocking.
+### Resultado Final
+Workspace inteiro compila sem erros (`cargo check --workspace`). Apenas warnings em crates de terceiros (`trie-db`) não relacionados com o projeto.

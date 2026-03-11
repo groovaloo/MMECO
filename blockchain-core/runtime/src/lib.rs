@@ -6,9 +6,9 @@ use sp_runtime::{
     generic, traits::{BlakeTwo256, IdentityLookup},
     MultiSignature, MultiAddress,
 };
-use sp_std::prelude::*;
 
 pub use reputation;
+pub use pallet_projects;
 
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
@@ -71,9 +71,24 @@ impl reputation::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
 
+impl pallet_projects::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type Reputation = Runtime;
+}
+
 frame_support::construct_runtime!(
     pub enum Runtime {
         System: frame_system,
         Reputation: reputation,
+        Projects: pallet_projects,
     }
 );
+
+pub type Executive = frame_executive::Executive<
+    Runtime,
+    Block,
+    frame_system::ChainContext<Runtime>,
+    Runtime,
+    AllPalletsWithSystem,
+>;
+

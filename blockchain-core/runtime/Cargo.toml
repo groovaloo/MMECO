@@ -9,6 +9,7 @@ scale-info = { version = "2.11.1", default-features = false, features = ["derive
 
 frame-support = { version = "38.0.0", default-features = false }
 frame-system = { version = "38.0.0", default-features = false }
+frame-executive = { version = "38.0.0", default-features = false }
 sp-runtime = { version = "39.0.0", default-features = false }
 sp-api = { version = "34.0.0", default-features = false }
 sp-std = { version = "14.0.0", default-features = false }
@@ -16,6 +17,7 @@ sp-core = { version = "34.0.0", default-features = false }
 sp-version = { version = "37.0.0", default-features = false }
 
 reputation = { path = "../pallets/reputation", default-features = false }
+pallet-projects = { path = "../pallets/projects", default-features = false }
 
 [features]
 default = ["std"]
@@ -24,10 +26,12 @@ std = [
     "scale-info/std",
     "frame-support/std",
     "frame-system/std",
+    "frame-executive/std",
     "sp-runtime/std",
     "sp-api/std",
     "sp-std/std",
     "sp-core/std",
     "sp-version/std",
     "reputation/std",
+    "pallet-projects/std",
 ]
