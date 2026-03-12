@@ -148,3 +148,48 @@ impl pallet_projects::Config for Runtime { ... }
 
 ### Resultado Final
 Workspace inteiro compila sem erros (`cargo check --workspace`). Apenas warnings em crates de terceiros (`trie-db`) não relacionados com o projeto.
+
+---
+
+## [2026-03-12] Expansão do pallet `projects` com fases dinâmicas
+
+### Contexto
+O pallet `projects` precisava de suportar fases dinâmicas com prova fotográfica (hash SHA-256), pagamentos por fase e validação por agentes IA, conforme a arquitectura do ecossistema Moral Money.
+
+### Alterações Implementadas
+
+**Novos tipos:**
+- `PhaseStatus` — `Pending`, `InProgress`, `ProofSubmitted`, `Validated`, `Rejected`, `Paid`
+- `Phase` — struct com `index`, `description`, `proof_hash: Option<[u8; 32]>`, `status`, `payment_amount`, `submitted_at`, `validated_at`, `paid_at`
+
+**Novo storage:**
+- `ProjectPhases: StorageDoubleMap<project_id, phase_index, Phase>` — fases dinâmicas por projecto
+
+**Novos campos em `Project`:**
+- `total_phases: u32` — número total de fases definidas
+- `phases_completed: u32` — fases concluídas e validadas
+
+**Novas extrinsics:**
+- `add_phase` — agente IA adiciona fase ao projecto
+- `submit_proof` — participante submete hash SHA-256 da foto
+- `validate_phase` — agente IA valida a fase
+- `reject_phase` — agente IA rejeita a fase
+- `pay_phase` — regista pagamento de fase validada
+
+### Erro encontrado durante escrita
+**Causa:** O heredoc cortou o `<` nos StorageMap/StorageDoubleMap/StorageValue.
+
+**Erro:**
+```
+error: expected one of `!`, `(`, `+`, `::`, `;`, `<`, or `where`, found reserved identifier `_`
+```
+
+**Solução:**
+```bash
+sed -i '' 's/= StorageMap$/= StorageMap</' pallets/projects/src/lib.rs
+sed -i '' 's/= StorageDoubleMap$/= StorageDoubleMap</' pallets/projects/src/lib.rs
+sed -i '' 's/= StorageValue$/= StorageValue</' pallets/projects/src/lib.rs
+```
+
+### Resultado
+`cargo check -p pallet-projects` compila sem erros.
