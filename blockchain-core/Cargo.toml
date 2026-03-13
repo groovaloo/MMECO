@@ -2,6 +2,7 @@
 members = [
     "pallets/reputation",
     "pallets/projects",
+    "pallets/governance",
     "runtime",
     "node"
 ]

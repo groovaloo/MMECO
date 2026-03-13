@@ -193,3 +193,92 @@ sed -i '' 's/= StorageValue$/= StorageValue</' pallets/projects/src/lib.rs
 
 ### Resultado
 `cargo check -p pallet-projects` compila sem erros.
+
+---
+
+## [2026-03-12] Histórico completo de erros resolvidos pelo Opus
+
+### Erro — unresolved import super::reputation
+Pallets são crates independentes. Solução: adicionar dependência no Cargo.toml com package = "reputation" e importar com pallet_reputation::.
+
+### Erro — Vec não implementa MaxEncodedLen
+Substituir Vec por BoundedVec com limites ConstU32.
+
+### Erro — block_number().into() mismatched types
+Usar block.try_into().unwrap_or(0u64).
+
+### Erro — Versões incompatíveis frame-support
+Alinhar todos os Cargo.toml para usar a mesma fonte (substrate polkadot-v1.0.0).
+
+### Erro — reputation::Pallet<Runtime> não implementa reputation::Config
+No runtime usar type Reputation = Runtime (não o Pallet). No Config do pallet usar type Reputation: frame_system::Config + pallet_reputation::Config.
+
+### Erro — pub use projects não encontra crate
+Hífens tornam-se underscores: pub use pallet_projects.
+
+### Erro — índices duplicados no Substrate polkadot-v1.0.0
+Corrigir manualmente message.rs no cache com índices sequenciais 0-14.
+
+### Erro — Rust 1.94 incompatível com polkadot-v1.0.0
+Instalar e usar nightly-2023-12-01.
+
+### Erro — Cargo.lock versão 4 incompatível com nightly-2023-12-01
+Apagar Cargo.lock e usar stable para gerir dependências.
+
+###
+
+---
+
+## [2026-03-13] Pallet `governance` — comissão temporária de conflitos
+
+### Contexto
+Novo pallet para gerir conflitos em projectos. Quando há um conflito, o pallet selecciona automaticamente os 5 membros com maior reputação no domínio do projecto (lendo directamente o storage do pallet reputation), regista a comissão na blockchain, recebe votos e dissolve-se após decisão por maioria.
+
+### Estrutura implementada
+
+**Tipos:**
+- `DisputeStatus` — `Open`, `Decided`, `Cancelled`
+- `Decision` — `ApproveProject`, `RejectProject`, `ApprovePhase`, `RejectPhase`
+- `VoteChoice` — `Approve`, `Reject`
+- `Vote<AccountId>` — membro, escolha, timestamp
+- `Dispute<AccountId>` — id, project_id, phase_index, domain, council, votes, status, decision, reason, created_at, decided_at
+
+**Storage:**
+- `Disputes` — StorageMap dispute_id -> Dispute
+- `DisputeCounter` — StorageValue contador
+- `DisputesByProject` — StorageMap project_id -> BoundedVec de dispute_ids
+
+**Extrinsics:**
+- `raise_dispute(project_id, domain, phase_index, reason)` — cria disputa e selecciona comissão automaticamente via select_top_experts
+- `submit_vote(dispute_id, choice)` — membro da comissão vota; maioria decide automaticamente
+- `cancel_dispute(dispute_id)` — cancela disputa aberta
+
+### Erros encontrados e resolvidos
+
+**Erro 1 — heredoc corta `<` nos StorageMap/StorageValue/BoundedVec**
+Solução:
+```bash
+sed -i '' 's/= StorageMap$/= StorageMap</' pallets/governance/src/lib.rs
+sed -i '' 's/= StorageValue$/= StorageValue</' pallets/governance/src/lib.rs
+sed -i '' 's/let mut council: BoundedVec$/let mut council: BoundedVec</' pallets/governance/src/lib.rs
+```
+
+**Erro 2 — AccountId ambíguo: `frame_system::Config::AccountId` vs `frame_system::pallet::Config::AccountId`**
+
+Causa: Quando governance herda `frame_system::Config + pallet_reputation::Config`, o compilador vê dois `AccountId` diferentes porque `pallet_reputation::Config` herda de `frame_system::pallet::Config` (git) e o governance herda de `frame_system::Config` (crates.io). São o mesmo tipo em runtime mas o compilador não consegue unificá-los.
+
+Solução — adicionar constraint que iguala os dois AccountId no bound do Config:
+```rust
+pub trait Config: frame_system::Config 
+    + pallet_reputation::Config<AccountId = <Self as frame_system::Config>::AccountId> {
+    type RuntimeEvent: ...
+}
+```
+E usar sempre `<T as frame_system::Config>::AccountId` no código.
+
+**Erro 3 — `pub use pallet::*` não encontra módulo**
+Causa: O módulo chama-se `pallet` mas o compilador não o encontra sem o macro do frame.
+Solução: Comentar a linha ou deixar o macro tratar da exportação.
+
+### Resultado
+`cargo check --workspace` compila sem erros. Apenas warnings de `trie-db` (terceiros) e `#[pallet::weight(10_000)]` deprecated (não bloqueante).
