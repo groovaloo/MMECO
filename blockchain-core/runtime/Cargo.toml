@@ -18,6 +18,7 @@ sp-version = { version = "37.0.0", default-features = false }
 
 reputation = { path = "../pallets/reputation", default-features = false }
 pallet-projects = { path = "../pallets/projects", default-features = false }
+pallet-governance = { path = "../pallets/governance", default-features = false }
 
 [features]
 default = ["std"]
@@ -34,4 +35,5 @@ std = [
     "sp-version/std",
     "reputation/std",
     "pallet-projects/std",
+    "pallet-governance/std",
 ]

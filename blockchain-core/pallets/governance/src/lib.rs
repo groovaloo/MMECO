@@ -1,6 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-// pallet exported via macro
+pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -57,7 +57,7 @@ pub mod pallet {
     }
 
     #[pallet::config]
-    pub trait Config: frame_system::Config + pallet_reputation::Config<AccountId = <Self as frame_system::Config>::AccountId> {
+    pub trait Config: frame_system::Config + pallet_reputation::Config {
         type RuntimeEvent: From<Event<Self>>
             + IsType<<Self as frame_system::Config>::RuntimeEvent>;
     }
@@ -71,7 +71,7 @@ pub mod pallet {
         _,
         Blake2_128Concat,
         u64,
-        Dispute<<T as frame_system::Config>::AccountId>,
+        Dispute<T::AccountId>,
         OptionQuery
     >;
 
@@ -93,15 +93,13 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         DisputeRaised(u64, u64, ContributionType),
-        VoteSubmitted(u64, <T as frame_system::Config>::AccountId, VoteChoice),
+        VoteSubmitted(u64, T::AccountId, VoteChoice),
         DisputeDecided(u64, Decision),
         DisputeCancelled(u64),
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        ProjectNotFound,
-        ProjectNotActive,
         DisputeNotFound,
         DisputeNotOpen,
         NotCouncilMember,
@@ -133,10 +131,8 @@ pub mod pallet {
 
             let dispute_id = Self::dispute_counter();
 
-            let mut council: BoundedVec<
-                <T as frame_system::Config>::AccountId,
-                ConstU32<MAX_COUNCIL>
-            > = BoundedVec::default();
+            let mut council: BoundedVec<T::AccountId, ConstU32<MAX_COUNCIL>> =
+                BoundedVec::default();
 
             for (account, _rep) in experts.into_iter() {
                 let _ = council.try_push(account);
@@ -179,7 +175,7 @@ pub mod pallet {
             let mut dispute = Self::dispute(dispute_id)
                 .ok_or(Error::<T>::DisputeNotFound)?;
 
-            ensure!(dispute.status == DisputeStatus::Open, Error::<T>::DisputeNotOpen);
+            ensure!(DisputeStatus::Open == dispute.status, Error::<T>::DisputeNotOpen);
 
             ensure!(
                 dispute.council.iter().any(|m| m == &who),
@@ -205,10 +201,10 @@ pub mod pallet {
             Self::deposit_event(Event::VoteSubmitted(dispute_id, who, choice));
 
             let approve_votes = dispute.votes.iter()
-                .filter(|v| v.choice == VoteChoice::Approve)
+                .filter(|v| VoteChoice::Approve == v.choice)
                 .count();
             let reject_votes = dispute.votes.iter()
-                .filter(|v| v.choice == VoteChoice::Reject)
+                .filter(|v| VoteChoice::Reject == v.choice)
                 .count();
             let majority = (dispute.council.len() / 2) + 1;
 
@@ -242,7 +238,7 @@ pub mod pallet {
             let mut dispute = Self::dispute(dispute_id)
                 .ok_or(Error::<T>::DisputeNotFound)?;
 
-            ensure!(dispute.status == DisputeStatus::Open, Error::<T>::DisputeNotOpen);
+            ensure!(DisputeStatus::Open == dispute.status, Error::<T>::DisputeNotOpen);
 
             dispute.status = DisputeStatus::Cancelled;
             Disputes::<T>::insert(dispute_id, &dispute);
@@ -253,9 +249,7 @@ pub mod pallet {
     }
 
     impl<T: Config> Pallet<T> {
-        pub fn get_dispute(
-            dispute_id: u64,
-        ) -> Option<Dispute<<T as frame_system::Config>::AccountId>> {
+        pub fn get_dispute(dispute_id: u64) -> Option<Dispute<T::AccountId>> {
             Self::dispute(dispute_id)
         }
 

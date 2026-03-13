@@ -9,6 +9,7 @@ use sp_runtime::{
 
 pub use reputation;
 pub use pallet_projects;
+pub use pallet_governance;
 
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
@@ -71,6 +72,10 @@ impl reputation::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
 
+impl pallet_governance::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+}
+
 impl pallet_projects::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Reputation = Runtime;
@@ -81,6 +86,7 @@ frame_support::construct_runtime!(
         System: frame_system,
         Reputation: reputation,
         Projects: pallet_projects,
+        Governance: pallet_governance,
     }
 );
 
