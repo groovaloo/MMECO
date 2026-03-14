@@ -282,3 +282,24 @@ Solução: Comentar a linha ou deixar o macro tratar da exportação.
 
 ### Resultado
 `cargo check --workspace` compila sem erros. Apenas warnings de `trie-db` (terceiros) e `#[pallet::weight(10_000)]` deprecated (não bloqueante).
+
+---
+
+## [2026-03-13] Pallet governance integrado no runtime
+
+### Alterações
+- `runtime/Cargo.toml` — adicionado `pallet-governance` em dependencies e em `std` features
+- `runtime/src/lib.rs` — adicionado `impl pallet_governance::Config for Runtime` e `Governance: pallet_governance` no `construct_runtime!`
+
+### Erro final resolvido — AccountId ambíguo no pallet governance
+
+**Causa raiz:**
+`pallet_reputation::Config` herda apenas `frame_system::Config`. O `AccountId` é sempre `<T as frame_system::Config>::AccountId`. Tentar usar `<T as pallet_reputation::Config>::AccountId` causava `E0576: cannot find associated type AccountId in trait pallet_reputation::Config`.
+
+**Solução definitiva:**
+- Usar `T::AccountId` em todo o código do governance (sem qualificação explícita)
+- Bound do Config: apenas `frame_system::Config + pallet_reputation::Config` sem constraints adicionais
+- Não adicionar `where` clauses com `AccountId =` — causam recursão infinita (`E0275`)
+
+### Resultado
+`cargo check --workspace` compila sem erros.
