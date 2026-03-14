@@ -303,3 +303,30 @@ Solução: Comentar a linha ou deixar o macro tratar da exportação.
 
 ### Resultado
 `cargo check --workspace` compila sem erros.
+
+---
+
+## [2026-03-14] Node real com tokio e jsonrpsee
+
+### Contexto
+O stub anterior (gerador de relatório) foi substituído por um node real com servidor RPC/WS.
+
+### Implementação
+- `tokio` como runtime async
+- `jsonrpsee 0.24` como servidor RPC/WS
+- Porta 9944 para WebSocket e RPC
+- Endpoints: system_health, system_name, system_version, chain_getHeader, chain_getBlockHash, rpc_methods
+- Node fica a correr indefinidamente até Ctrl+C
+
+### Erro encontrado
+`Ok::<Value, _>` — compilador não conseguia inferir tipo de erro.
+Solução: usar `Ok::<Value, jsonrpsee::types::ErrorObjectOwned>`
+
+### VPS
+- Service systemd actualizado para usar node real
+- Testado Mac → VPS: `curl http://46.224.209.65:9944` responde correctamente
+- Node permanente via systemd com Restart=always
+
+### Resultado
+`cargo build --release -p node` compila no Mac e na VPS.
+RPC funcional entre Mac e VPS.
