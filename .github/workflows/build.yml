@@ -11,18 +11,21 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
 
-      - name: Instalar Rust e Dependências
+      - name: Instalar Rust e Novas Targets
         run: |
           rustup update stable
+          # Instalamos as duas targets para garantir compatibilidade
           rustup target add wasm32-unknown-unknown
-          # ESTA É A LINHA QUE FALTAVA:
-          rustup component add rust-src --toolchain stable-x86_64-unknown-linux-gnu
+          rustup target add wasm32v1-none
+          rustup component add rust-src
           sudo apt-get update
           sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
 
       - name: Compilar Node
         run: |
           cd blockchain-core
+          # Adicionamos uma flag para evitar o erro de duplicados no WASM
+          export SKIP_WASM_BUILD=
           cargo build --release -p node --bin node
 
       - name: Guardar Binário
