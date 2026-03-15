@@ -1,30 +1,43 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+#![recursion_limit = "256"]
 
-use frame_support::traits::Everything;
-use frame_support::parameter_types;
-use sp_runtime::{
+// Inclui o binário WASM
+#[cfg(feature = "std")]
+include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+
+use polkadot_sdk::frame_support::{
+    construct_runtime, derive_impl, parameter_types, traits::Everything,
+};
+use polkadot_sdk::sp_runtime::{
     generic, traits::{BlakeTwo256, IdentityLookup},
     MultiSignature, MultiAddress,
 };
+use polkadot_sdk::sp_version::{self, RuntimeVersion};
+use polkadot_sdk::frame_system;
 
+// Pallets da Moral Money
 pub use reputation;
 pub use pallet_projects;
 pub use pallet_governance;
 
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
+
+// Corrigido para o padrão 2025
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<
     MultiAddress<sp_core::sr25519::Public, ()>,
     RuntimeCall,
     MultiSignature,
-    (),
+    SignedExtra,
 >;
+
+pub type SignedExtra = (); 
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 parameter_types! {
     pub const BlockHashCount: BlockNumber = 250;
     pub const SS58Prefix: u8 = 42;
-    pub const Version: sp_version::RuntimeVersion = sp_version::RuntimeVersion {
+    pub const Version: RuntimeVersion = RuntimeVersion {
         spec_name: sp_version::create_runtime_str!("moral-money"),
         impl_name: sp_version::create_runtime_str!("moral-money"),
         authoring_version: 1,
@@ -36,36 +49,18 @@ parameter_types! {
     };
 }
 
+// Implementação moderna do System
+#[derive_impl(frame_system::config_preludes::SolochainDefaultConfig)]
 impl frame_system::Config for Runtime {
-    type BaseCallFilter = Everything;
-    type BlockWeights = ();
-    type BlockLength = ();
-    type DbWeight = ();
-    type RuntimeOrigin = RuntimeOrigin;
-    type RuntimeCall = RuntimeCall;
-    type Nonce = u32;
-    type Hash = sp_core::H256;
-    type Hashing = BlakeTwo256;
+    type Block = Block;
     type AccountId = sp_core::sr25519::Public;
     type Lookup = IdentityLookup<Self::AccountId>;
-    type Block = Block;
     type RuntimeEvent = RuntimeEvent;
-    type BlockHashCount = BlockHashCount;
+    type RuntimeCall = RuntimeCall;
+    type RuntimeOrigin = RuntimeOrigin;
     type Version = Version;
-    type PalletInfo = PalletInfo;
-    type AccountData = ();
-    type OnNewAccount = ();
-    type OnKilledAccount = ();
-    type SystemWeightInfo = ();
     type SS58Prefix = SS58Prefix;
-    type OnSetCode = ();
-    type MaxConsumers = frame_support::traits::ConstU32<16>;
-    type RuntimeTask = ();
-    type SingleBlockMigrations = ();
-    type MultiBlockMigrator = ();
-    type PreInherents = ();
-    type PostInherents = ();
-    type PostTransactions = ();
+    type MaxConsumers = polkadot_sdk::frame_support::traits::ConstU32<16>;
 }
 
 impl reputation::Config for Runtime {
@@ -81,20 +76,40 @@ impl pallet_projects::Config for Runtime {
     type Reputation = Runtime;
 }
 
-frame_support::construct_runtime!(
-    pub enum Runtime {
-        System: frame_system,
-        Reputation: reputation,
-        Projects: pallet_projects,
-        Governance: pallet_governance,
-    }
-);
+// A macro obrigatória para o SDK 2025
+#[polkadot_sdk::frame_support::runtime]
+mod runtime {
+    #[runtime::runtime]
+    #[runtime::derive(
+        RuntimeCall,
+        RuntimeEvent,
+        RuntimeError,
+        RuntimeOrigin,
+        RuntimeFreezeReason,
+        RuntimeHoldReason,
+        RuntimeSlashReason,
+        RuntimeLockId,
+        RuntimeTask
+    )]
+    pub struct Runtime;
 
-pub type Executive = frame_executive::Executive<
+    #[runtime::pallet_index(0)]
+    pub type System = frame_system::Pallet<Runtime>;
+
+    #[runtime::pallet_index(1)]
+    pub type Reputation = reputation::Pallet<Runtime>;
+
+    #[runtime::pallet_index(2)]
+    pub type Projects = pallet_projects::Pallet<Runtime>;
+
+    #[runtime::pallet_index(3)]
+    pub type Governance = pallet_governance::Pallet<Runtime>;
+}
+
+pub type Executive = polkadot_sdk::frame_executive::Executive<
     Runtime,
     Block,
     frame_system::ChainContext<Runtime>,
     Runtime,
     AllPalletsWithSystem,
 >;
-
