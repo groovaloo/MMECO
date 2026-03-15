@@ -1,5 +1,6 @@
 name: Compilar Moral Money Node
 on:
+  workflow_dispatch:
   push:
     branches: [ vps-updates ]
 
@@ -10,15 +11,17 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
 
-      - name: Instalar Rust e WASM
+      - name: Instalar Rust e Dependências
         run: |
           rustup update stable
           rustup target add wasm32-unknown-unknown
+          sudo apt-get update
+          sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
 
-      - name: Compilar Node (Release)
+      - name: Compilar Node
         run: |
           cd blockchain-core
-          cargo build --release -p node --bin node
+          cargo build --release --locked -p node --bin node
 
       - name: Guardar Binário
         uses: actions/upload-artifact@v4
