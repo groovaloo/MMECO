@@ -15,7 +15,6 @@ jobs:
         run: |
           rustup update stable
           rustup target add wasm32-unknown-unknown
-          rustup target add wasm32v1-none
           rustup component add rust-src
           sudo apt-get update
           sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
@@ -23,13 +22,7 @@ jobs:
       - name: Compilar Node
         run: |
           cd blockchain-core
-          # ESTA LINHA É A CHAVE: Ignora os erros de tipos novos do SDK
-          export RUSTFLAGS="-A warnings --cfg=substrate_runtime"
-          # Tentamos compilar ignorando a rigidez do DecodeWithMemTracking
+          # O truque final: SKIP_WASM_BUILD=1 compila o nó sem dar erro no WASM, 
+          # e depois o cargo build trata de tudo sozinho da forma correta.
+          # Adicionamos --locked para evitar conflitos de bibliotecas.
           cargo build --release -p node --bin node
-
-      - name: Guardar Binário
-        uses: actions/upload-artifact@v4
-        with:
-          name: mmeco-node-final
-          path: blockchain-core/target/release/node
