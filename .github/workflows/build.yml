@@ -11,10 +11,11 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
 
-      - name: Instalar Rust e Dependências
+      - name: Instalar Rust Versão Compatível
         run: |
-          rustup install 1.84.0
-          rustup default 1.84.0
+          # 1.88.0 suporta Edition 2024 e as bibliotecas 'time' e 'constant_time_eq'
+          rustup install 1.88.0
+          rustup default 1.88.0
           rustup target add wasm32-unknown-unknown
           rustup component add rust-src
           sudo apt-get update
@@ -23,9 +24,8 @@ jobs:
       - name: Compilar Node
         run: |
           cd blockchain-core
-          # O SEGREDO: SKIP_WASM_BUILD força o nó a compilar sem entrar em pânico no Runtime
+          # Ignoramos o WASM Build problemático e erros de tracking de memória
           export SKIP_WASM_BUILD=1
-          # RUSTFLAGS para evitar o erro de 'DecodeWithMemTracking'
           export RUSTFLAGS="-A warnings"
           cargo build --release -p node --bin node
 
