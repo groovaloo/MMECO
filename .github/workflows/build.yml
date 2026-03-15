@@ -11,11 +11,11 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
 
-      - name: Instalar Rust Versão Estável 2025
+      - name: Instalar Rust Versão Estável
         run: |
-          # Forçamos a versão 1.82 que é a mais compatível com o stable2503
-          rustup install 1.82.0
-          rustup default 1.82.0
+          # 1.85.0 já suporta edition 2024 mas não tem os bugs da 1.94
+          rustup install 1.85.0
+          rustup default 1.85.0
           rustup target add wasm32-unknown-unknown
           rustup component add rust-src
           sudo apt-get update
@@ -24,9 +24,7 @@ jobs:
       - name: Compilar Node
         run: |
           cd blockchain-core
-          # O "Pulo do Gato": 
-          # 1. SKIP_WASM_BUILD=1 evita que o builder tente usar o compilador errado no início
-          # 2. Usamos --locked para garantir que ele usa as versões exatas do teu projeto
+          # SKIP_WASM_BUILD=1 para evitar conflitos no builder inicial
           export SKIP_WASM_BUILD=1
           cargo build --release -p node --bin node
 
