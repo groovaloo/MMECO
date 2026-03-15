@@ -1,38 +1,48 @@
 [package]
-name = "runtime"
+name = "mmeco-runtime"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
-scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
-
-frame-support = { version = "38.0.0", default-features = false }
-frame-system = { version = "38.0.0", default-features = false }
-frame-executive = { version = "38.0.0", default-features = false }
-sp-runtime = { version = "39.0.0", default-features = false }
-sp-api = { version = "34.0.0", default-features = false }
-sp-std = { version = "14.0.0", default-features = false }
-sp-core = { version = "34.0.0", default-features = false }
-sp-version = { version = "37.0.0", default-features = false }
+polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk.git", tag = "polkadot-stable2503", default-features = false, features = [
+    "frame-executive",
+    "frame-support",
+    "frame-system",
+    "frame-system-rpc-runtime-api",
+    "pallet-aura",
+    "pallet-balances",
+    "pallet-grandpa",
+    "pallet-sudo",
+    "pallet-timestamp",
+    "pallet-transaction-payment",
+    "pallet-transaction-payment-rpc-runtime-api",
+    "sp-api",
+    "sp-block-builder",
+    "sp-consensus-aura",
+    "sp-consensus-grandpa",
+    "sp-core",
+    "sp-genesis-builder",
+    "sp-inherents",
+    "sp-offchain",
+    "sp-runtime",
+    "sp-session",
+    "sp-std",
+    "sp-transaction-pool",
+    "sp-version",
+    "substrate-wasm-builder",
+] }
 
 reputation = { path = "../pallets/reputation", default-features = false }
 pallet-projects = { path = "../pallets/projects", default-features = false }
 pallet-governance = { path = "../pallets/governance", default-features = false }
 
+[build-dependencies]
+polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk.git", tag = "polkadot-stable2503", features = ["substrate-wasm-builder"] }
+
 [features]
 default = ["std"]
 std = [
-    "codec/std",
-    "scale-info/std",
-    "frame-support/std",
-    "frame-system/std",
-    "frame-executive/std",
-    "sp-runtime/std",
-    "sp-api/std",
-    "sp-std/std",
-    "sp-core/std",
-    "sp-version/std",
+    "polkadot-sdk/std",
     "reputation/std",
     "pallet-projects/std",
     "pallet-governance/std",
