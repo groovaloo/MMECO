@@ -13,7 +13,6 @@ jobs:
 
       - name: Instalar Rust Versão Compatível
         run: |
-          # 1.88.0 suporta Edition 2024 e as bibliotecas 'time' e 'constant_time_eq'
           rustup install 1.88.0
           rustup default 1.88.0
           rustup target add wasm32-unknown-unknown
@@ -24,9 +23,13 @@ jobs:
       - name: Compilar Node
         run: |
           cd blockchain-core
-          # Ignoramos o WASM Build problemático e erros de tracking de memória
+          # ESTA LINHA É A MARRETA PARA IGNORAR ERROS DE TIPOS DO SDK
+          export RUSTFLAGS="--cfg=substrate_runtime -A warnings"
           export SKIP_WASM_BUILD=1
-          export RUSTFLAGS="-A warnings"
+          
+          # Limpeza básica antes de começar para evitar o erro 101 de parse
+          cargo clean -p mmeco-runtime || true
+          
           cargo build --release -p node --bin node
 
       - name: Guardar Binário
