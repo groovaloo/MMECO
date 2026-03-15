@@ -15,13 +15,14 @@ jobs:
         run: |
           rustup update stable
           rustup target add wasm32-unknown-unknown
+          # ESTA É A LINHA QUE FALTAVA:
+          rustup component add rust-src --toolchain stable-x86_64-unknown-linux-gnu
           sudo apt-get update
           sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
 
       - name: Compilar Node
         run: |
           cd blockchain-core
-          # Removemos o --locked para ele resolver as dependências sozinho
           cargo build --release -p node --bin node
 
       - name: Guardar Binário
