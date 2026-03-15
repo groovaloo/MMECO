@@ -5,9 +5,7 @@
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use polkadot_sdk::frame_support::{
-    derive_impl, parameter_types,
-    traits::ConstBool,
-    weights::IdentityFee,
+    derive_impl, parameter_types, traits::ConstBool, weights::IdentityFee,
     genesis_builder_helper::{build_state, get_preset},
 };
 use polkadot_sdk::frame_system;
@@ -43,26 +41,30 @@ pub type Nonce = u32;
 pub type Hash = polkadot_sdk::sp_core::H256;
 pub type BlockNumber = u32;
 
+// CORREÇÃO: Definição explícita do SignedExtra para evitar erro WrapperTypeEncode
 pub type SignedExtra = (
-    frame_system::CheckNonZeroSender<Runtime>,
-    frame_system::CheckSpecVersion<Runtime>,
-    frame_system::CheckTxVersion<Runtime>,
-    frame_system::CheckGenesis<Runtime>,
-    frame_system::CheckEra<Runtime>,
-    frame_system::CheckNonce<Runtime>,
-    frame_system::CheckWeight<Runtime>,
-    pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
+    polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
+    polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
+    polkadot_sdk::frame_system::CheckTxVersion<Runtime>,
+    polkadot_sdk::frame_system::CheckGenesis<Runtime>,
+    polkadot_sdk::frame_system::CheckEra<Runtime>,
+    polkadot_sdk::frame_system::CheckNonce<Runtime>,
+    polkadot_sdk::frame_system::CheckWeight<Runtime>,
+    polkadot_sdk::pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
 );
 
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
-pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-pub type UncheckedExtrinsic =
-    generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
+
+// CORREÇÃO: UncheckedExtrinsic com os 4 parâmetros genéricos corretos
+pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
+
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
+pub type Block = generic::Block<Header, UncheckedExtrinsic>;
+
 pub type Executive = frame_executive::Executive<
     Runtime,
     Block,
-    frame_system::ChainContext<Runtime>,
+    polkadot_sdk::frame_system::ChainContext<Runtime>,
     Runtime,
     AllPalletsWithSystem,
 >;
@@ -230,7 +232,7 @@ impl_runtime_apis! {
     impl polkadot_sdk::sp_api::Core<Block> for Runtime {
         fn version() -> RuntimeVersion { VERSION }
         fn execute_block(block: Block) { Executive::execute_block(block); }
-        fn initialize_block(header: &<Block as BlockT>::Header) -> sp_runtime::ExtrinsicInclusionMode {
+        fn initialize_block(header: &<Block as BlockT>::Header) -> polkadot_sdk::sp_runtime::ExtrinsicInclusionMode {
             Executive::initialize_block(header)
         }
     }
