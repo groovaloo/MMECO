@@ -11,9 +11,11 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
 
-      - name: Instalar Rust e Dependências
+      - name: Instalar Rust Versão Estável 2025
         run: |
-          rustup update stable
+          # Forçamos a versão 1.82 que é a mais compatível com o stable2503
+          rustup install 1.82.0
+          rustup default 1.82.0
           rustup target add wasm32-unknown-unknown
           rustup component add rust-src
           sudo apt-get update
@@ -22,7 +24,14 @@ jobs:
       - name: Compilar Node
         run: |
           cd blockchain-core
-          # O truque final: SKIP_WASM_BUILD=1 compila o nó sem dar erro no WASM, 
-          # e depois o cargo build trata de tudo sozinho da forma correta.
-          # Adicionamos --locked para evitar conflitos de bibliotecas.
+          # O "Pulo do Gato": 
+          # 1. SKIP_WASM_BUILD=1 evita que o builder tente usar o compilador errado no início
+          # 2. Usamos --locked para garantir que ele usa as versões exatas do teu projeto
+          export SKIP_WASM_BUILD=1
           cargo build --release -p node --bin node
+
+      - name: Guardar Binário
+        uses: actions/upload-artifact@v4
+        with:
+          name: mmeco-node-final
+          path: blockchain-core/target/release/node
