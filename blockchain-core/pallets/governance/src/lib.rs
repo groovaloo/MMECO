@@ -4,7 +4,7 @@ pub use pallet::*;
 
 #[polkadot_sdk::frame_support::pallet]
 pub mod pallet {
-    // Usamos os caminhos absolutos para garantir que o compilador não se perde
+    // Usamos os caminhos absolutos para o SDK 2026
     use polkadot_sdk::frame_support::pallet_prelude::*;
     use polkadot_sdk::frame_system::pallet_prelude::*;
 
@@ -18,8 +18,7 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    // Adicionamos as derivações necessárias para o Runtime
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
+    // CORREÇÃO: Removido o derive manual (Encode, Decode, etc) para evitar conflitos com a macro do SDK
     pub enum Event<T: Config> {
         ProposalCreated(u32),
     }
