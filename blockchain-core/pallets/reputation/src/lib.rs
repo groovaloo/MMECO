@@ -17,6 +17,8 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    // ESTA É A ALTERAÇÃO: Adicionámos o Encode, Decode e TypeInfo
+    #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
     pub enum Event<T: Config> {
         ReputationUpdated(T::AccountId, u32),
     }
@@ -25,5 +27,20 @@ pub mod pallet {
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
     #[pallet::call]
-    impl<T: Config> Pallet<T> {}
+    impl<T: Config> Pallet<T> {
+        #[pallet::call_index(0)]
+        #[pallet::weight(Weight::default())]
+        pub fn update_reputation(origin: OriginFor<T>, target: T::AccountId, score: u32) -> DispatchResult {
+            ensure_root(origin)?; 
+            Self::deposit_event(Event::ReputationUpdated(target, score));
+            Ok(())
+        }
+    }
+
+    // Função necessária para a compatibilidade entre as pallets
+    impl<T: Config> Pallet<T> {
+        pub fn select_top_experts(_domain: polkadot_sdk::sp_std::vec::Vec<u8>) -> polkadot_sdk::sp_std::vec::Vec<(T::AccountId, u32)> {
+            polkadot_sdk::sp_std::vec::Vec::new()
+        }
+    }
 }
