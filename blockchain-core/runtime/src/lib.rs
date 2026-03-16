@@ -9,7 +9,7 @@ use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use polkadot_sdk::sp_core::{self, Encode, Decode};
 use polkadot_sdk::sp_runtime::{
-    self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+    self, create_runtime_str, generic, impl_opaque_keys, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
     MultiSignature,
 };
 use polkadot_sdk::sp_version::{self, RuntimeVersion};
@@ -18,6 +18,13 @@ pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 pub type Balance = u128;
 pub type BlockNumber = u32;
+
+impl_opaque_keys! {
+    pub struct SessionKeys {
+        pub aura: Aura,
+        pub grandpa: Grandpa,
+    }
+}
 
 #[derive(Encode, Decode, polkadot_sdk::sp_runtime::RuntimeDebug, Clone, PartialEq, Eq, polkadot_sdk::scale_info::TypeInfo)]
 pub struct SignedExtra;
@@ -160,5 +167,19 @@ impl_runtime_apis! {
         fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) }
         fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { Runtime::metadata_at_version(version) }
         fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { Runtime::metadata_versions() }
+    }
+    impl polkadot_sdk::sp_block_builder::BlockBuilder<Block> for Runtime {
+        fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> polkadot_sdk::sp_runtime::ApplyExtrinsicResult {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::apply_extrinsic(extrinsic)
+        }
+        fn finalize_block() -> <Block as BlockT>::Header {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::finalize_block()
+        }
+        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> polkadot_sdk::sp_std::vec::Vec<<Block as BlockT>::Extrinsic> {
+            data.create_extrinsics()
+        }
+        fn check_inherents(block: Block, data: polkadot_sdk::sp_inherents::InherentData) -> polkadot_sdk::sp_inherents::CheckInherentsResult {
+            data.check_extrinsics(&block)
+        }
     }
 }
