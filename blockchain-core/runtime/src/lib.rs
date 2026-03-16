@@ -19,9 +19,9 @@ use polkadot_sdk::frame_executive;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use polkadot_sdk::sp_consensus_grandpa::AuthorityId as GrandpaId;
-use polkadot_sdk::sp_core;
+use polkadot_sdk::sp_core::{self, Encode, Decode}; // Adicionado Encode/Decode
 use polkadot_sdk::sp_runtime::{
-    self, create_runtime_str, generic, impl_opaque_keys,
+    self, create_runtime_str, generic, impl_opaque_keys, RuntimeDebug,
     traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, NumberFor, Verify},
     transaction_validity::{TransactionSource, TransactionValidity},
     ApplyExtrinsicResult, MultiSignature,
@@ -41,7 +41,8 @@ pub type Nonce = u32;
 pub type Hash = polkadot_sdk::sp_core::H256;
 pub type BlockNumber = u32;
 
-// CORREÇÃO: Definição explícita do SignedExtra para evitar erro WrapperTypeEncode
+// CORREÇÃO: Adicionado derive para satisfazer o trait Codec exigido no Run #15
+#[derive(Encode, Decode, RuntimeDebug, Clone, PartialEq, Eq, polkadot_sdk::scale_info::TypeInfo)]
 pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
     polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
@@ -55,11 +56,11 @@ pub type SignedExtra = (
 
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
-// CORREÇÃO: UncheckedExtrinsic com os 4 parâmetros genéricos corretos
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
+// CORREÇÃO: UncheckedExtrinsic com caminhos explícitos
+pub type UncheckedExtrinsic = polkadot_sdk::sp_runtime::generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
 
-pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
-pub type Block = generic::Block<Header, UncheckedExtrinsic>;
+pub type SignedPayload = polkadot_sdk::sp_runtime::generic::SignedPayload<RuntimeCall, SignedExtra>;
+pub type Block = polkadot_sdk::sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
 
 pub type Executive = frame_executive::Executive<
     Runtime,
