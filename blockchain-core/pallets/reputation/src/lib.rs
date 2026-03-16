@@ -17,8 +17,7 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    // ESTA É A ALTERAÇÃO: Adicionámos o Encode, Decode e TypeInfo
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
+    // CORREÇÃO: Removido o derive manual. O SDK gera automaticamente.
     pub enum Event<T: Config> {
         ReputationUpdated(T::AccountId, u32),
     }
@@ -37,8 +36,8 @@ pub mod pallet {
         }
     }
 
-    // Função necessária para a compatibilidade entre as pallets
     impl<T: Config> Pallet<T> {
+        // Função necessária para a compatibilidade com as outras pallets
         pub fn select_top_experts(_domain: polkadot_sdk::sp_std::vec::Vec<u8>) -> polkadot_sdk::sp_std::vec::Vec<(T::AccountId, u32)> {
             polkadot_sdk::sp_std::vec::Vec::new()
         }
