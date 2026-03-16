@@ -1,0 +1,21 @@
+# 1. Imagem base com Rust 1.88
+FROM rust:1.88-slim
+
+# 2. Instalar dependências de sistema
+RUN apt-get update && apt-get install -y \
+    clang curl libssl-dev llvm libudev-dev make protobuf-compiler git pkg-config
+
+# 3. Criar pasta de trabalho
+WORKDIR /mmeco
+
+# 4. Copiar o código para dentro do Docker
+COPY . .
+
+# 5. Compilar o binário
+RUN cd blockchain-core && \
+    export SKIP_WASM_BUILD=1 && \
+    export RUSTFLAGS="-A warnings" && \
+    cargo build --release -p node --bin node
+
+# 6. Comando por defeito (opcional)
+CMD ["./blockchain-core/target/release/node"]
