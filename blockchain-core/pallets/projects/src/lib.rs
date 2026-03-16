@@ -17,8 +17,8 @@ pub mod pallet {
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
-    // CORREÇÃO CRÍTICA: Adicionado Encode, Decode e TypeInfo para o SDK 2025
-    #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo)]
+    // CORREÇÃO: Removido o derive manual (Encode, Decode, etc). 
+    // A macro #[pallet::event] do SDK 2026 já gera estas implementações automaticamente.
     pub enum Event<T: Config> {
         ProjectCreated(T::AccountId, u32),
     }
@@ -33,7 +33,7 @@ pub mod pallet {
         pub fn create_project(origin: OriginFor<T>, id: u32) -> DispatchResult {
             let who = ensure_signed(origin)?;
             
-            // Lógica simples de emissão de evento
+            // Emissão de evento usando a estrutura do SDK
             Self::deposit_event(Event::ProjectCreated(who, id));
             Ok(())
         }
