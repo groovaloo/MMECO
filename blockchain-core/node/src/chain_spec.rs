@@ -1,8 +1,25 @@
-use mmeco_runtime::{AccountId, RuntimeGenesisConfig, WASM_BINARY};
+use mmeco_runtime::{AccountId, RuntimeGenesisConfig, WASM_BINARY, Signature};
 use polkadot_sdk::sc_service::ChainType;
+use polkadot_sdk::sp_core::{sr25519, Pair, Public};
+use polkadot_sdk::sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Especialização da Spec da Chain
 pub type ChainSpec = polkadot_sdk::sc_service::GenericChainSpec<RuntimeGenesisConfig>;
+
+fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
+	TPublic::Pair::from_string(&format!("//{}", seed), None)
+		.expect("Seed inválida")
+		.public()
+}
+
+type AccountPublic = <Signature as Verify>::Signer;
+
+pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
+where
+	AccountPublic: From<<TPublic::Pair as Pair>::Public>,
+{
+	AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
+}
 
 pub fn development_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "WASM binary não disponível".to_string())?;
@@ -14,10 +31,11 @@ pub fn development_config() -> Result<ChainSpec, String> {
 		move || {
 			testnet_genesis(
 				wasm_binary,
-				// Root Key (Sudo) - Usamos a conta de teste Alice
-				hex_literal::hex!("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d").into(),
+				// Root Key (Sudo) - Alice
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				vec![
-					hex_literal::hex!("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d").into(),
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					get_account_id_from_seed::<sr25519::Public>("Bob"),
 				],
 			)
 		},
@@ -47,7 +65,6 @@ fn testnet_genesis(
 			key: Some(root_key),
 		},
 		transaction_payment: Default::default(),
-        // As tuas paletes iniciam vazias por defeito
 		reputation: Default::default(),
 		pallet_projects: Default::default(),
 		pallet_governance: Default::default(),
