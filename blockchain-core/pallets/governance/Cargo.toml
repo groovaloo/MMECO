@@ -4,11 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# O nosso motor principal
+polkadot-sdk = { workspace = true }
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
-scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
-frame-support = { version = "38.0.0", default-features = false }
-frame-system = { version = "38.0.0", default-features = false }
-sp-std = { version = "14.0.0", default-features = false }
+scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
+
+# As tuas outras paletes
 pallet-reputation = { package = "reputation", path = "../reputation", default-features = false }
 pallet-projects = { path = "../projects", default-features = false }
 
@@ -17,9 +18,10 @@ default = ["std"]
 std = [
     "codec/std",
     "scale-info/std",
-    "frame-support/std",
-    "frame-system/std",
-    "sp-std/std",
+    "polkadot-sdk/std",
     "pallet-reputation/std",
     "pallet-projects/std",
+]
+try-runtime = [
+    "polkadot-sdk/try-runtime",
 ]
