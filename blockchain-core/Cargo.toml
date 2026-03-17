@@ -1,9 +1,13 @@
 [workspace]
 members = [
-    "pallets/reputation",
-    "pallets/projects",
-    "pallets/governance",
+    "node",
     "runtime",
-    "node"
+    "pallets/*",
 ]
 resolver = "2"
+
+[profile.release]
+panic = "unwind"
+
+[workspace.dependencies]
+polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk.git", tag = "polkadot-stable2409", features = ["runtime"] }
