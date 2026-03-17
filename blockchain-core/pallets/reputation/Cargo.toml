@@ -20,3 +20,5 @@ std = [
     "scale-info/std",
     "serde/std",
 ]
+runtime-benchmarks = []  # ← ADICIONA ESTA LINHA
+try-runtime = []         # ← ADICIONA ESTA LINHA TAMBÉM
