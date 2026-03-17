@@ -1,0 +1,11 @@
+name: Compilar Moral Money Node
+on:
+  push:
+    branches: [ "vps-updates" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: rust:latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: apt-get update && apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler git pkg-config && rustup target add wasm32-unknown-unknown && cd blockchain-core && cargo build --release
