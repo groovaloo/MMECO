@@ -6,7 +6,8 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
-use polkadot_sdk::sp_core::{self, Encode, Decode, OpaqueMetadata};
+use polkadot_sdk::sp_core::{self, OpaqueMetadata};
+use polkadot_sdk::parity_scale_codec::{Encode, Decode};
 use polkadot_sdk::sp_runtime::{
     self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
     MultiSignature, ExtrinsicInclusionMode,
@@ -81,7 +82,7 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type AccountStore = System;
     type WeightInfo = ();
     type FreezeIdentifier = RuntimeFreezeReason;
-    type MaxFreezes = polkadot_sdk::frame_support::traits::ConstU32<8>;
+    type MaxFreezes = polkadot_sdk::frame_support::traits::ConstU32;
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
 }
