@@ -6,31 +6,22 @@ authors = ["Moral Money Team"]
 license = "MIT"
 
 [dependencies]
-frame-support = { version = "38.0.0", default-features = false }
-frame-system = { version = "38.0.0", default-features = false }
-sp-std = { version = "14.0.0", default-features = false }
-sp-core = { version = "34.0.0", default-features = false }
-sp-runtime = { version = "39.0.0", default-features = false }
-sp-io = { version = "38.0.0", default-features = false }
-scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
+# Dependência principal do Polkadot SDK centralizada no workspace
+polkadot-sdk = { workspace = true }
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
+
+# Ligação à tua palete de reputação que acabámos de migrar!
 pallet-reputation = { package = "reputation", path = "../reputation", default-features = false }
-serde = { version = "1.0.210", optional = true }
 
 [features]
 default = ["std"]
 std = [
-    "frame-support/std",
-    "frame-system/std",
-    "sp-std/std",
-    "sp-core/std",
-    "sp-runtime/std",
-    "sp-io/std",
-    "scale-info/std",
     "codec/std",
-    "serde",
+    "scale-info/std",
+    "polkadot-sdk/std",
     "pallet-reputation/std",
 ]
 try-runtime = [
-    "frame-support/try-runtime",
+    "polkadot-sdk/try-runtime",
 ]
