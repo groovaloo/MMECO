@@ -8,10 +8,11 @@ use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
     self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-    MultiSignature, ExtrinsicInclusionMode,
+    MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, transaction_validity::{TransactionSource, TransactionValidity},
 };
 use polkadot_sdk::sp_version::{self, RuntimeVersion};
 use polkadot_sdk::parity_scale_codec::{Encode, Decode};
+use polkadot_sdk::sp_std::prelude::*;
 
 pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
@@ -19,7 +20,6 @@ pub type Balance = u128;
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
-// No Polkadot SDK moderno, simplificamos o SignedExtra para evitar erros de Encode
 pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
     polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
@@ -52,13 +52,15 @@ mod runtime {
     pub type Balances = polkadot_sdk::pallet_balances;
     #[runtime::pallet_index(3)]
     pub type Sudo = polkadot_sdk::pallet_sudo;
-    
-    // As tuas paletes personalizadas
     #[runtime::pallet_index(4)]
-    pub type Reputation = reputation;
+    pub type TransactionPayment = polkadot_sdk::pallet_transaction_payment;
+    
+    // Paletes MMECO
     #[runtime::pallet_index(5)]
-    pub type Projects = pallet_projects;
+    pub type Reputation = reputation;
     #[runtime::pallet_index(6)]
+    pub type Projects = pallet_projects;
+    #[runtime::pallet_index(7)]
     pub type Governance = pallet_governance;
 }
 
@@ -68,7 +70,6 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
 }
 
-// Configuração das tuas paletes
 impl reputation::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 impl pallet_projects::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
@@ -129,4 +130,45 @@ impl_runtime_apis! {
             polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::execute_block(block); 
         }
         fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime,
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::initialize_block(header)
+        }
+    }
+
+    impl polkadot_sdk::sp_api::Metadata<Block> for Runtime {
+        fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) }
+        fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { Runtime::metadata_at_version(version) }
+        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { Runtime::metadata_versions() }
+    }
+
+    impl polkadot_sdk::sp_block_builder::BlockBuilder<Block> for Runtime {
+        fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> ApplyExtrinsicResult {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::apply_extrinsic(extrinsic)
+        }
+        fn finalize_block() -> <Block as BlockT>::Header {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::finalize_block()
+        }
+        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
+            data.create_extrinsics()
+        }
+        fn check_inherents(block: Block, data: polkadot_sdk::sp_inherents::InherentData) -> polkadot_sdk::sp_inherents::CheckInherentsResult {
+            data.check_extrinsics(&block)
+        }
+    }
+
+    impl polkadot_sdk::sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
+        fn validate_transaction(source: TransactionSource, tx: <Block as BlockT>::Extrinsic, block_hash: <Block as BlockT>::Hash) -> polkadot_sdk::sp_runtime::transaction_validity::TransactionValidity {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::validate_transaction(source, tx, block_hash)
+        }
+    }
+
+    impl polkadot_sdk::sp_offchain::OffchainWorkerApi<Block> for Runtime {
+        fn offchain_worker(header: &<Block as BlockT>::Header) {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::offchain_worker(header)
+        }
+    }
+
+    impl polkadot_sdk::sp_session::SessionKeys<Block> for Runtime {
+        fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { Default::default() }
+        fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { None }
+    }
+}
