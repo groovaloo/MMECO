@@ -1,0 +1,31 @@
+name: Compilar Moral Money Node
+on:
+  workflow_dispatch:
+  push:
+    branches: [ rebuild-2025 ]  # ← ALTERADO AQUI
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v4
+      - name: Instalar Rust 1.88
+        run: |
+          # Versão necessária para o Polkadot SDK 2025
+          rustup install 1.88.0
+          rustup default 1.88.0
+          rustup target add wasm32-unknown-unknown
+          rustup component add rust-src
+          sudo apt-get update && sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
+      - name: Compilar Node
+        run: |
+          cd blockchain-core
+          # Usamos flags de compatibilidade para ignorar avisos e focar no binário
+          export RUSTFLAGS="--cfg=substrate_runtime -A warnings"
+          export SKIP_WASM_BUILD=1
+          cargo build --release -p node --bin node
+      - name: Guardar Binário
+        uses: actions/upload-artifact@v4
+        with:
+          name: mmeco-node-final
+          path: blockchain-core/target/release/node
