@@ -6,10 +6,10 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
-use polkadot_sdk::sp_core::{self, Encode, Decode};
+use polkadot_sdk::sp_core::{self, Encode, Decode, OpaqueMetadata};
 use polkadot_sdk::sp_runtime::{
     self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-    MultiSignature,
+    MultiSignature, ExtrinsicInclusionMode,
 };
 use polkadot_sdk::sp_version::{self, RuntimeVersion};
 
@@ -19,21 +19,13 @@ pub type Balance = u128;
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
-#[derive(Encode, Decode, polkadot_sdk::sp_runtime::RuntimeDebug, Clone, PartialEq, Eq, polkadot_sdk::scale_info::TypeInfo)]
-pub struct SignedExtra;
+// Em vez de inventar um SignedExtra que dá erro de Encode, 
+// usamos uma tupla vazia para assinar (o mínimo viável para passar no compilador)
+pub type SignedExtra = ();
 
-impl polkadot_sdk::sp_runtime::traits::SignedExtension for SignedExtra {
-    const IDENTIFIER: &'static str = "SignedExtra";
-    type AccountId = AccountId;
-    type Call = RuntimeCall;
-    type AdditionalSigned = ();
-    type Pre = ();
-    fn additional_signed(&self) -> Result<Self::AdditionalSigned, polkadot_sdk::sp_runtime::transaction_validity::TransactionValidityError> { Ok(()) }
-    fn pre_dispatch(self, _who: &Self::AccountId, _call: &Self::Call, _info: &polkadot_sdk::sp_runtime::traits::DispatchInfoOf<Self::Call>, _len: usize) -> Result<Self::Pre, polkadot_sdk::sp_runtime::transaction_validity::TransactionValidityError> { Ok(()) }
-}
-
-pub type UncheckedExtrinsic = polkadot_sdk::sp_runtime::generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
-pub type Block = polkadot_sdk::sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
+// Definição limpa do Extrinsic
+pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
+pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 #[polkadot_sdk::frame_support::runtime]
 mod runtime {
@@ -117,13 +109,13 @@ impl_runtime_apis! {
         fn execute_block(block: Block) { 
             polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::execute_block(block); 
         }
-        fn initialize_block(header: &<Block as BlockT>::Header) -> polkadot_sdk::sp_runtime::ExtrinsicInclusionMode {
+        fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
             polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::initialize_block(header)
         }
     }
     impl polkadot_sdk::sp_api::Metadata<Block> for Runtime {
-        fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) }
-        fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { Runtime::metadata_at_version(version) }
+        fn metadata() -> OpaqueMetadata { OpaqueMetadata::new(Runtime::metadata().into()) }
+        fn metadata_at_version(version: u32) -> Option<OpaqueMetadata> { Runtime::metadata_at_version(version) }
         fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { Runtime::metadata_versions() }
     }
 }
