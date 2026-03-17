@@ -1,24 +1,23 @@
 [package]
-name = "node"
+name = "mmeco-node"
 version = "0.1.0"
+authors = ["Moral Money Team"]
 edition = "2021"
+publish = false
 
 [dependencies]
-# CLI simples
-clap = { version = "4.0", features = ["derive"] }
-
-# Ligação direta aos teus Pallets (Opus 4.6)
-reputation = { path = "../pallets/reputation" }
-pallet-projects = { path = "../pallets/projects" }
-pallet-governance = { path = "../pallets/governance" }
-
-# Motor de comunicação LEVE (Versões estáveis para o teu Mac)
-jsonrpsee = { version = "0.24", features = ["server", "macros"] }
+# Ferramentas base
+clap = { version = "4.4", features = ["derive"] }
 tokio = { version = "1.36", features = ["full"] }
+anyhow = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+hex-literal = "0.4.1"
 
-# Utilitários essenciais do Substrate
-sp-core = "28.0.0"
-sp-keyring = "31.0.0"
-anyhow = "1.0.102"
+# O motor Polkadot SDK (v1.15.0 / Stable 2409)
+polkadot-sdk = { workspace = true, features = ["node-api", "rpc-substrate", "sc-cli", "sc-service", "sc-executor", "sp-io"] }
+
+# O teu Runtime
+mmeco-runtime = { path = "../runtime" }
+
+[build-dependencies]
+polkadot-sdk = { workspace = true, features = ["node-api"] }
