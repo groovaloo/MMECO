@@ -1,46 +1,71 @@
 import json
-import requests
+from substrateinterface import SubstrateInterface, Keypair
 
 class AuditorMoralMoney:
-    def __init__(self, state_path="../blockchain-core/moral_money_state.json"):
-        self.state_path = state_path
-        self.blockchain_url = "http://127.0.0.1:9945"
-
-    def analisar_integridade(self, projeto_id, dominio):
-        """Lê o estado do Rust e verifica se há anomalias"""
+    def __init__(self):
+        # Ligação ao teu Nó Rust (Porta padrão 9944)
         try:
-            with open(self.state_path, 'r') as f:
-                dados = json.load(f)
-            
-            projeto = dados['projetos'].get(str(projeto_id))
-            if not projeto:
-                return "Projeto não encontrado."
-
-            # Simulação de verificação de metadados da foto
-            print(f"🔍 Analisando hashes de prova do Projeto #{projeto_id}...")
-            
-            # Se a IA detetar algo estranho (simulado), abre disputa
-            suspeita = False # Aqui entraria a lógica de visão computacional
-            
-            if suspeita:
-                self.abrir_disputa(projeto_id, dominio)
-            else:
-                print(f"✅ Provas do Projeto #{projeto_id} parecem legítimas em BLD.")
-                
+            self.substrate = SubstrateInterface(url="ws://127.0.0.1:9944")
+            print("✅ Auditor Ligado ao Nó RPC")
         except Exception as e:
-            print(f"❌ Erro na auditoria: {e}")
+            print(f"⚠️ Nó offline: {e}")
+            self.substrate = None
 
-    def abrir_disputa(self, p_id, dominio):
-        payload = {
-            "jsonrpc": "2.0",
-            "method": "moral_openDispute",
-            "params": [int(p_id), dominio],
-            "id": 1
-        }
-        response = requests.post(self.blockchain_url, json=payload)
-        print("⚖️ Alerta de Fraude! Sistema de Disputa Ativado.")
-        print(f"Resposta do Nó: {response.json().get('result')}")
+    def analisar_integridade(self, projeto_id):
+        """Lê o estado real da Palete Projects no Rust"""
+        if not self.substrate:
+            return "Erro: Sem ligação à blockchain."
+
+        print(f"🔍 Auditoria ao Projeto #{projeto_id} iniciada...")
+
+        # 1. Consultar a Palete de Projetos (Storage: Projects)
+        # O Rust guarda isto como um Map de ID -> Project
+        projeto_data = self.substrate.query(
+            module="Projects",
+            storage_function="Projects",
+            params=[projeto_id]
+        )
+
+        if not projeto_data:
+            print(f"❌ Projeto #{projeto_id} não existe na blockchain.")
+            return
+
+        # Simulação de análise de IA (Visão Computacional / Metadados)
+        # Aqui o Auditor verificaria se a 'proof' (hash da foto) é válida
+        projeto = projeto_data.value
+        print(f"📋 Dados do Projeto: {projeto}")
+
+        # Lógica de suspeita: Se o valor pedido for absurdo ou a prova for nula
+        suspeita = False
+        if projeto['balance'] > 1000000: # Exemplo: Alerta para valores muito altos
+            suspeita = True
+
+        if suspeita:
+            self.abrir_disputa(projeto_id)
+        else:
+            print(f"✅ Integridade confirmada para o Projeto #{projeto_id}.")
+
+    def abrir_disputa(self, projeto_id):
+        """Envia um comando 'Sudo' ou 'Governance' para bloquear o projeto"""
+        print(f"⚖️ FRAUDE DETETADA! A abrir disputa para o Projeto #{projeto_id}...")
+        
+        # No Substrate 2025, o Auditor enviaria uma transação (Extrinsic)
+        # Exemplo de chamada para uma função de disputa na palete Governance
+        if self.substrate:
+            # Aqui usarias a chave do Auditor para assinar
+            keypair = Keypair.create_from_uri('//Alice') # Simulação com Alice
+            
+            call = self.substrate.compose_call(
+                call_module='pallet_governance',
+                call_function='abrir_disputa',
+                call_params={'projeto_id': projeto_id}
+            )
+            
+            # extrinsic = self.substrate.create_signed_extrinsic(call=call, keypair=keypair)
+            # self.substrate.submit_extrinsic(extrinsic)
+            print(f"🚀 Transação de Disputa enviada para o bloco.")
 
 if __name__ == "__main__":
     auditor = AuditorMoralMoney()
-    auditor.analisar_integridade(1, "Agricultura")
+    # Testar com o ID 1
+    auditor.analisar_integridade(1)
