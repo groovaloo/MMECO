@@ -1,5 +1,5 @@
 [package]
-name = "reputation"
+name = "pallet-projects" 
 version = "0.1.0"
 authors = ["Moral Money Team"]
 edition = "2021"
