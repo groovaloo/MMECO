@@ -6,12 +6,12 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
-use polkadot_sdk::sp_core::{self, Encode, Decode};
 use polkadot_sdk::sp_runtime::{
     self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-    MultiSignature,
+    MultiSignature, ExtrinsicInclusionMode,
 };
 use polkadot_sdk::sp_version::{self, RuntimeVersion};
+use polkadot_sdk::parity_scale_codec::{Encode, Decode};
 
 pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
@@ -19,21 +19,20 @@ pub type Balance = u128;
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
-#[derive(Encode, Decode, polkadot_sdk::sp_runtime::RuntimeDebug, Clone, PartialEq, Eq, polkadot_sdk::scale_info::TypeInfo)]
-pub struct SignedExtra;
+// No Polkadot SDK moderno, simplificamos o SignedExtra para evitar erros de Encode
+pub type SignedExtra = (
+    polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
+    polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
+    polkadot_sdk::frame_system::CheckTxVersion<Runtime>,
+    polkadot_sdk::frame_system::CheckGenesis<Runtime>,
+    polkadot_sdk::frame_system::CheckEra<Runtime>,
+    polkadot_sdk::frame_system::CheckNonce<Runtime>,
+    polkadot_sdk::frame_system::CheckWeight<Runtime>,
+    polkadot_sdk::pallet_balances::ChargeTransactionPayment<Runtime>,
+);
 
-impl polkadot_sdk::sp_runtime::traits::SignedExtension for SignedExtra {
-    const IDENTIFIER: &'static str = "SignedExtra";
-    type AccountId = AccountId;
-    type Call = RuntimeCall;
-    type AdditionalSigned = ();
-    type Pre = ();
-    fn additional_signed(&self) -> Result<Self::AdditionalSigned, polkadot_sdk::sp_runtime::transaction_validity::TransactionValidityError> { Ok(()) }
-    fn pre_dispatch(self, _who: &Self::AccountId, _call: &Self::Call, _info: &polkadot_sdk::sp_runtime::traits::DispatchInfoOf<Self::Call>, _len: usize) -> Result<Self::Pre, polkadot_sdk::sp_runtime::transaction_validity::TransactionValidityError> { Ok(()) }
-}
-
-pub type UncheckedExtrinsic = polkadot_sdk::sp_runtime::generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
-pub type Block = polkadot_sdk::sp_runtime::generic::Block<Header, UncheckedExtrinsic>;
+pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
+pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 #[polkadot_sdk::frame_support::runtime]
 mod runtime {
@@ -53,6 +52,8 @@ mod runtime {
     pub type Balances = polkadot_sdk::pallet_balances;
     #[runtime::pallet_index(3)]
     pub type Sudo = polkadot_sdk::pallet_sudo;
+    
+    // As tuas paletes personalizadas
     #[runtime::pallet_index(4)]
     pub type Reputation = reputation;
     #[runtime::pallet_index(5)]
@@ -67,6 +68,7 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
 }
 
+// Configuração das tuas paletes
 impl reputation::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 impl pallet_projects::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
@@ -100,6 +102,15 @@ impl polkadot_sdk::pallet_sudo::Config for Runtime {
     type WeightInfo = ();
 }
 
+impl polkadot_sdk::pallet_transaction_payment::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type OnChargeTransaction = polkadot_sdk::pallet_transaction_payment::FungibleAdapter<Balances, ()>;
+    type OperationalFeeMultiplier = polkadot_sdk::frame_support::traits::ConstU8<5>;
+    type WeightToFee = polkadot_sdk::frame_support::weights::IdentityFee<Balance>;
+    type LengthToFee = polkadot_sdk::frame_support::weights::IdentityFee<Balance>;
+    type FeeMultiplierUpdate = ();
+}
+
 pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("moral-money"),
     impl_name: create_runtime_str!("moral-money"),
@@ -117,13 +128,5 @@ impl_runtime_apis! {
         fn execute_block(block: Block) { 
             polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::execute_block(block); 
         }
-        fn initialize_block(header: &<Block as BlockT>::Header) -> polkadot_sdk::sp_runtime::ExtrinsicInclusionMode {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::initialize_block(header)
-        }
-    }
-    impl polkadot_sdk::sp_api::Metadata<Block> for Runtime {
-        fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) }
-        fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { Runtime::metadata_at_version(version) }
-        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { Runtime::metadata_versions() }
-    }
-}
+        fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
+            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime,
