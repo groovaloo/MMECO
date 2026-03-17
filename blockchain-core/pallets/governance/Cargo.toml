@@ -1,27 +1,22 @@
 [package]
-name = "pallet-governance"
+name = "reputation"
 version = "0.1.0"
+authors = ["Moral Money Team"]
 edition = "2021"
+publish = false
 
 [dependencies]
-# O nosso motor principal
-polkadot-sdk = { workspace = true }
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
-scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
-
-# As tuas outras paletes
-pallet-reputation = { package = "reputation", path = "../reputation", default-features = false }
-pallet-projects = { path = "../projects", default-features = false }
+# Aqui dizemos para ir buscar tudo ao "Chefe" (Workspace)
+polkadot-sdk = { workspace = true, features = ["frame-support", "frame-system"] }
+parity-scale-codec = { workspace = true }
+scale-info = { workspace = true }
+serde = { workspace = true, optional = true }
 
 [features]
 default = ["std"]
 std = [
-    "codec/std",
-    "scale-info/std",
     "polkadot-sdk/std",
-    "pallet-reputation/std",
-    "pallet-projects/std",
-]
-try-runtime = [
-    "polkadot-sdk/try-runtime",
+    "parity-scale-codec/std",
+    "scale-info/std",
+    "serde/std",
 ]
