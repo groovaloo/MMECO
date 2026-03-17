@@ -1,26 +1,19 @@
 [package]
 name = "reputation"
-version = "0.1.0"
+version = "4.0.0-dev"
+description = "Pallete de Reputação MMECO"
 edition = "2021"
 
 [dependencies]
-frame-support = { version = "38.0.0", default-features = false }
-frame-system = { version = "38.0.0", default-features = false }
-sp-std = { version = "14.0.0", default-features = false }
+# Vamos buscar o motor principal que configuraste no ficheiro mestre
+polkadot-sdk = { workspace = true }
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
-scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
+scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
 
 [features]
 default = ["std"]
 std = [
-    "frame-support/std",
-    "frame-system/std",
-    "sp-std/std",
     "codec/std",
     "scale-info/std",
+    "polkadot-sdk/std",
 ]
-
-[dev-dependencies]
-sp-core = { version = "34.0.0", default-features = false }
-sp-runtime = { version = "39.0.0", default-features = false }
-sp-io = { version = "38.0.0", default-features = false }
