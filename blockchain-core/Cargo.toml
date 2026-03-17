@@ -8,3 +8,6 @@ resolver = "2"
 
 [workspace.dependencies]
 polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk.git", tag = "polkadot-stable2503", features = ["runtime"] }
+
+[patch.crates-io]
+ark-vrf = { git = "https://github.com/davxy/ark-vrf", rev = "bf2d1cf" }
