@@ -13,11 +13,37 @@ anyhow = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 hex-literal = "0.4.1"
 
-# O motor Polkadot SDK (v1.15.0 / Stable 2409)
-polkadot-sdk = { workspace = true, features = ["node-api", "rpc-substrate", "sc-cli", "sc-service", "sc-executor", "sp-io"] }
+# Substrate Client - Polkadot SDK 2025
+sc-cli = { workspace = true }
+sc-service = { workspace = true }
+sc-executor = { workspace = true }
+sc-network = { workspace = true }
+sc-rpc = { workspace = true }
+sc-rpc-api = { workspace = true }
+sc-consensus = { workspace = true }
+sc-consensus-aura = { workspace = true }
+sc-consensus-grandpa = { workspace = true }
+sc-transaction-pool = { workspace = true }
+sc-transaction-pool-api = { workspace = true }
+
+# Substrate Primitives
+sp-io = { workspace = true }
+sp-core = { workspace = true }
+sp-runtime = { workspace = true }
+sp-consensus-aura = { workspace = true }
+sp-consensus-grandpa = { workspace = true }
+sp-timestamp = { workspace = true }
+sp-inherents = { workspace = true }
+sp-keyring = { workspace = true }
+sp-api = { workspace = true }
+sp-blockchain = { workspace = true }
+sp-block-builder = { workspace = true }
+
+# Frame
+frame-system = { workspace = true }
 
 # O teu Runtime
 mmeco-runtime = { path = "../runtime" }
 
 [build-dependencies]
-polkadot-sdk = { workspace = true, features = ["node-api"] }
+substrate-build-script-utils = { workspace = true }
