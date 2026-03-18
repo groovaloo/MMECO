@@ -13,7 +13,7 @@ jobs:
       - name: Instalar Dependências do Sistema (C/C++ e Ferramentas)
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config clang curl libssl-dev llvm libudev-dev make protobuf-compiler cmake autoconf automake libtool
+          sudo apt-get install -y build-essential pkg-config clang libclang-dev curl libssl-dev llvm libudev-dev make protobuf-compiler cmake autoconf automake libtool
       
       - name: Instalar Rust 1.88
         run: |
@@ -26,16 +26,14 @@ jobs:
         run: |
           cd blockchain-core
           
-          # 1. Destruir sabotadores de versão
-          rm -f rust-toolchain.toml rust-toolchain
+          # Limpar ficheiros que causam conflitos
+          rm -f rust-toolchain.toml rust-toolchain Cargo.lock
           
-          # 2. RASGAR O TALÃO DE COMPRAS ANTIGO (Cargo.lock)
-          rm -f Cargo.lock
-          
-          # 3. Forçar o sistema a criar links novos e frescos
+          # Atualizar a lista de pacotes
           cargo update
           
-          # 4. Arrancar a compilação de vez!
+          # Indicar ao sistema onde está o libclang e compilar!
+          export LIBCLANG_PATH=$(llvm-config --libdir)
           cargo build --release -p mmeco-node
       
       - name: Guardar Binário
