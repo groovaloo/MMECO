@@ -1,24 +1,23 @@
 [package]
 name = "pallet-governance"
 version = "0.1.0"
-authors = ["Moral Money Team"]
 edition = "2021"
-publish = false
 
 [dependencies]
-# Aqui dizemos para ir buscar tudo ao "Chefe" (Workspace)
-polkadot-sdk = { workspace = true, features = ["frame-support", "frame-system"] }
-parity-scale-codec = { workspace = true }
-scale-info = { workspace = true }
-serde = { workspace = true, optional = true }
+codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+scale-info = { version = "2.10.0", default-features = false, features = ["derive"] }
+
+# Adiciona estas duas linhas:
+frame-support = { workspace = true }
+frame-system = { workspace = true }
 
 [features]
 default = ["std"]
 std = [
-    "polkadot-sdk/std",
-    "parity-scale-codec/std",
+    "codec/std",
     "scale-info/std",
-    "serde/std",
+    "frame-support/std",
+    "frame-system/std",
 ]
-runtime-benchmarks = []  # ← ADICIONA ESTA LINHA
-try-runtime = []         # ← ADICIONA ESTA LINHA TAMBÉM
+runtime-benchmarks = []
+try-runtime = []
