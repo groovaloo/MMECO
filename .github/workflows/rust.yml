@@ -2,7 +2,7 @@ name: Compilar Moral Money Node
 on:
   workflow_dispatch:
   push:
-    branches: [ rebuild-2025 ]
+    branches: [ rebuild-2025.2 ]
 jobs:
   build:
     runs-on: ubuntu-latest
