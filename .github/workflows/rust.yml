@@ -10,23 +10,26 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
       
-      - name: Instalar Rust 1.88 Manualmente
+      - name: Instalar Dependências do Sistema (C/C++ e Ferramentas)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config clang curl libssl-dev llvm libudev-dev make protobuf-compiler cmake
+      
+      - name: Instalar Rust 1.88
         run: |
           rustup install 1.88.0
           rustup default 1.88.0
           rustup target add wasm32-unknown-unknown
           rustup component add rust-src
-          sudo apt-get update && sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
       
       - name: Compilar Node (Build Completo)
         run: |
           cd blockchain-core
           
-          # 1. Eliminar os ficheiros que forçam o downgrade secreto
-          rm -f rust-toolchain.toml
-          rm -f rust-toolchain
+          # Destruir sabotadores de versão
+          rm -f rust-toolchain.toml rust-toolchain
           
-          # 2. Compilar (O Rust 1.88 já é o padrão, basta o comando limpo!)
+          # Arrancar a compilação
           cargo build --release -p mmeco-node
       
       - name: Guardar Binário
