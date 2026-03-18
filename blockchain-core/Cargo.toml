@@ -14,7 +14,6 @@ edition = "2021"
 repository = "https://github.com/nuno/mmeco"
 
 [workspace.dependencies]
-# TROCAMOS "tag" POR "branch" PARA OBTER AS CORREÇÕES DA PARITY (Fix do erro fflonk)
 polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
 substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
 
@@ -62,3 +61,7 @@ panic = "unwind"
 opt-level = 3
 lto = "fat"
 codegen-units = 1
+
+# O FIX CIRÚRGICO PARA O FFLONK
+[patch."https://github.com/w3f/fflonk"]
+fflonk = { git = "https://github.com/w3f/fflonk", rev = "be95d4c971b1d15b5badfc06ff13f5c07987d484" }
