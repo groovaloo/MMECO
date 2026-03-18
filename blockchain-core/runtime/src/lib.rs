@@ -14,7 +14,6 @@ use polkadot_sdk::sp_version::RuntimeVersion;
 use polkadot_sdk::sp_std::prelude::*;
 use polkadot_sdk::sp_std::borrow::Cow;
 
-// NOMES EXATOS DAS PALETES
 pub use pallet_reputation;
 pub use pallet_projects;
 pub use pallet_governance;
@@ -33,7 +32,6 @@ pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckEra<Runtime>,
     polkadot_sdk::frame_system::CheckNonce<Runtime>,
     polkadot_sdk::frame_system::CheckWeight<Runtime>,
-    polkadot_sdk::pallet_balances::ChargeTransactionPayment<Runtime>,
 );
 
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
@@ -59,17 +57,12 @@ pub mod runtime {
     pub type Sudo = polkadot_sdk::pallet_sudo;
     
     #[runtime::pallet_index(4)]
-    pub type TransactionPayment = polkadot_sdk::pallet_transaction_payment;
-    
-    #[runtime::pallet_index(5)]
     pub type Reputation = crate::pallet_reputation;
-    #[runtime::pallet_index(6)]
+    #[runtime::pallet_index(5)]
     pub type Projects = crate::pallet_projects;
-    #[runtime::pallet_index(7)]
+    #[runtime::pallet_index(6)]
     pub type Governance = crate::pallet_governance;
 }
-
-pub use runtime::*;
 
 #[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
@@ -108,15 +101,6 @@ impl polkadot_sdk::pallet_sudo::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type RuntimeCall = RuntimeCall;
     type WeightInfo = ();
-}
-
-impl polkadot_sdk::pallet_transaction_payment::Config for Runtime {
-    type RuntimeEvent = RuntimeEvent;
-    type OnChargeTransaction = polkadot_sdk::pallet_transaction_payment::FungibleAdapter<Balances, ()>;
-    type OperationalFeeMultiplier = polkadot_sdk::frame_support::traits::ConstU8<5>;
-    type WeightToFee = polkadot_sdk::frame_support::weights::IdentityFee<Balance>;
-    type LengthToFee = polkadot_sdk::frame_support::weights::IdentityFee<Balance>;
-    type FeeMultiplierUpdate = ();
 }
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
