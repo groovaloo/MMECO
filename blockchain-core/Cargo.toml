@@ -17,6 +17,9 @@ repository = "https://github.com/nuno/mmeco"
 # Versão estável do SDK para 2025
 polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-stable2409", default-features = false }
 
+# Ferramenta essencial para compilar o Runtime para WASM
+substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-stable2409" }
+
 # Substrate Client
 sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-stable2409" }
 sc-service = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-stable2409" }
