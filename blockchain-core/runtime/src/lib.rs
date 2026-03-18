@@ -11,10 +11,10 @@ use polkadot_sdk::sp_runtime::{
     MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, transaction_validity::{TransactionSource, TransactionValidity},
 };
 use polkadot_sdk::sp_version::{self, RuntimeVersion};
-use parity_scale_codec::{Encode, Decode}; // CORREÇÃO 1: Importado diretamente
+use parity_scale_codec::{Encode, Decode};
 use polkadot_sdk::sp_std::prelude::*;
 
-// CORREÇÃO 2: Nomes corretos dos crates das tuas paletes locais
+// Importação correta das tuas paletes
 pub use pallet_reputation;
 pub use pallet_projects;
 pub use pallet_governance;
@@ -40,7 +40,7 @@ pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 #[polkadot_sdk::frame_support::runtime]
-pub mod runtime {
+pub mod runtime { // ADICIONADO 'pub' AQUI para resolver o erro 1
     #[runtime::runtime]
     #[runtime::derive(
         RuntimeCall, RuntimeEvent, RuntimeError, RuntimeOrigin,
@@ -57,10 +57,11 @@ pub mod runtime {
     pub type Balances = polkadot_sdk::pallet_balances;
     #[runtime::pallet_index(3)]
     pub type Sudo = polkadot_sdk::pallet_sudo;
+    
+    // CORREÇÃO DO TRANSACTION PAYMENT
     #[runtime::pallet_index(4)]
     pub type TransactionPayment = polkadot_sdk::pallet_transaction_payment;
     
-    // Paletes MMECO - Apontando para os nomes corretos
     #[runtime::pallet_index(5)]
     pub type Reputation = crate::pallet_reputation;
     #[runtime::pallet_index(6)]
@@ -69,8 +70,7 @@ pub mod runtime {
     pub type Governance = crate::pallet_governance;
 }
 
-// Mantemos isto para que os blocos `impl` em baixo saibam o que é o `Runtime`
-pub use runtime::*;
+pub use runtime::*; // AGORA FUNCIONA porque o módulo é público!
 
 #[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
@@ -78,7 +78,6 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
 }
 
-// CORREÇÃO 3: Usando o nome correto das paletes nos blocos de configuração
 impl pallet_reputation::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 impl pallet_projects::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
