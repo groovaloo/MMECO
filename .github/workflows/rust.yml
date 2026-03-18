@@ -10,7 +10,7 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
       
-      - name: Instalar Rust 1.88
+      - name: Instalar Rust 1.88 Manualmente
         run: |
           rustup install 1.88.0
           rustup default 1.88.0
@@ -18,7 +18,7 @@ jobs:
           rustup component add rust-src
           sudo apt-get update && sudo apt-get install -y clang curl libssl-dev llvm libudev-dev make protobuf-compiler
       
-      - name: Compilar Node (Forçar Rust 1.88)
+      - name: Compilar Node (Build Completo)
         run: |
           cd blockchain-core
           
@@ -26,8 +26,8 @@ jobs:
           rm -f rust-toolchain.toml
           rm -f rust-toolchain
           
-          # 2. Compilar forçando explicitamente o Rust 1.88.0
-          cargo +1.88.0 build --release -p mmeco-node
+          # 2. Compilar (O Rust 1.88 já é o padrão, basta o comando limpo!)
+          cargo build --release -p mmeco-node
       
       - name: Guardar Binário
         uses: actions/upload-artifact@v4
