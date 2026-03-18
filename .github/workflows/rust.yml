@@ -26,10 +26,16 @@ jobs:
         run: |
           cd blockchain-core
           
-          # Destruir sabotadores de versão
+          # 1. Destruir sabotadores de versão
           rm -f rust-toolchain.toml rust-toolchain
           
-          # Arrancar a compilação
+          # 2. RASGAR O TALÃO DE COMPRAS ANTIGO (Cargo.lock)
+          rm -f Cargo.lock
+          
+          # 3. Forçar o sistema a criar links novos e frescos
+          cargo update
+          
+          # 4. Arrancar a compilação de vez!
           cargo build --release -p mmeco-node
       
       - name: Guardar Binário
