@@ -24,7 +24,6 @@ pub type Balance = u128;
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
-// REMOVIDA A PORTAGEM (ChargeTransactionPayment) PORQUE TIRÁMOS A PALETE DAS TAXAS
 pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
     polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
@@ -54,20 +53,18 @@ pub mod runtime {
     pub type Timestamp = polkadot_sdk::pallet_timestamp;
     #[runtime::pallet_index(2)]
     pub type Balances = polkadot_sdk::pallet_balances;
-    #[runtime::pallet_index(3)]
-    pub type Sudo = polkadot_sdk::pallet_sudo;
     
-    // AS 3 PALETES MMECO
-    #[runtime::pallet_index(4)]
+    // REMOVIDOS OS FANTASMAS: SUDO E TAXAS! AS TUAS PALETES AVANÇAM PARA A LINHA DA FRENTE.
+    #[runtime::pallet_index(3)]
     pub type Reputation = crate::pallet_reputation;
-    #[runtime::pallet_index(5)]
+    #[runtime::pallet_index(4)]
     pub type Projects = crate::pallet_projects;
-    #[runtime::pallet_index(6)]
+    #[runtime::pallet_index(5)]
     pub type Governance = crate::pallet_governance;
 }
 
-// A CHAVE MÁGICA QUE ABRE A PORTA (Resolve os erros E0412 e E0433)
-pub use crate::runtime::*;
+// A CHAVE DA PORTA VOLTOU AO SÍTIO CERTO
+pub use runtime::*;
 
 #[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
@@ -100,12 +97,6 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type MaxFreezes = polkadot_sdk::frame_support::traits::ConstU32<8>;
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
-}
-
-impl polkadot_sdk::pallet_sudo::Config for Runtime {
-    type RuntimeEvent = RuntimeEvent;
-    type RuntimeCall = RuntimeCall;
-    type WeightInfo = ();
 }
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
