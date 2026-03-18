@@ -1,184 +1,41 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-#![recursion_limit = "256"]
+[package]
+name = "mmeco-runtime"
+version = "0.1.0"
+edition = "2021"
+publish = false
 
-#[cfg(feature = "std")]
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+[dependencies]
+# Motor principal centralizado no workspace
+polkadot-sdk = { workspace = true, features = ["runtime"] }
 
-use polkadot_sdk::frame_support::derive_impl;
-use polkadot_sdk::sp_api::impl_runtime_apis;
-use polkadot_sdk::sp_runtime::{
-    self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-    MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, transaction_validity::{TransactionSource, TransactionValidity},
-};
-use polkadot_sdk::sp_version::{self, RuntimeVersion};
+# Codificação base (Sincronizado com o Workspace)
+parity-scale-codec = { workspace = true }
+scale-info = { workspace = true }
 
-// CORREÇÃO 1: AQUI JÁ NÃO DIZ "polkadot_sdk::" ANTES DO CODEC
-use parity_scale_codec::{Encode, Decode};
-use polkadot_sdk::sp_std::prelude::*;
+# As tuas paletes personalizadas
+pallet-reputation = { path = "../pallets/reputation", default-features = false }
+pallet-projects = { path = "../pallets/projects", default-features = false }
+pallet-governance = { path = "../pallets/governance", default-features = false }
 
-// CORREÇÃO 2: AQUI ESTÃO OS NOMES EXATOS DAS TUAS PALETES COMO ESTÃO NO CARGO.TOML
-pub use pallet_reputation;
-pub use pallet_projects;
-pub use pallet_governance;
+[build-dependencies]
+substrate-wasm-builder = { workspace = true }
+substrate-build-script-utils = { workspace = true }
 
-pub type Signature = MultiSignature;
-pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
-pub type Balance = u128;
-pub type BlockNumber = u32;
-pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
-
-pub type SignedExtra = (
-    polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
-    polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
-    polkadot_sdk::frame_system::CheckTxVersion<Runtime>,
-    polkadot_sdk::frame_system::CheckGenesis<Runtime>,
-    polkadot_sdk::frame_system::CheckEra<Runtime>,
-    polkadot_sdk::frame_system::CheckNonce<Runtime>,
-    polkadot_sdk::frame_system::CheckWeight<Runtime>,
-    polkadot_sdk::pallet_balances::ChargeTransactionPayment<Runtime>,
-);
-
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
-pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-
-#[polkadot_sdk::frame_support::runtime]
-pub mod runtime {
-    #[runtime::runtime]
-    #[runtime::derive(
-        RuntimeCall, RuntimeEvent, RuntimeError, RuntimeOrigin,
-        RuntimeFreezeReason, RuntimeHoldReason, RuntimeSlashReason,
-        RuntimeLockId, RuntimeTask,
-    )]
-    pub struct Runtime;
-
-    #[runtime::pallet_index(0)]
-    pub type System = polkadot_sdk::frame_system;
-    #[runtime::pallet_index(1)]
-    pub type Timestamp = polkadot_sdk::pallet_timestamp;
-    #[runtime::pallet_index(2)]
-    pub type Balances = polkadot_sdk::pallet_balances;
-    #[runtime::pallet_index(3)]
-    pub type Sudo = polkadot_sdk::pallet_sudo;
-    
-    #[runtime::pallet_index(4)]
-    pub type TransactionPayment = polkadot_sdk::pallet_transaction_payment;
-    
-    // CORREÇÃO 3: APONTAMOS AS PALETES PARA O NOME CORRETO "crate::pallet_..."
-    #[runtime::pallet_index(5)]
-    pub type Reputation = crate::pallet_reputation;
-    #[runtime::pallet_index(6)]
-    pub type Projects = crate::pallet_projects;
-    #[runtime::pallet_index(7)]
-    pub type Governance = crate::pallet_governance;
-}
-
-pub use runtime::*;
-
-#[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
-impl polkadot_sdk::frame_system::Config for Runtime {
-    type Block = Block;
-    type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
-}
-
-impl pallet_reputation::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-impl pallet_projects::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-
-impl polkadot_sdk::pallet_timestamp::Config for Runtime {
-    type Moment = u64;
-    type OnTimestampSet = ();
-    type MinimumPeriod = polkadot_sdk::frame_support::traits::ConstU64<3000>;
-    type WeightInfo = ();
-}
-
-impl polkadot_sdk::pallet_balances::Config for Runtime {
-    type MaxLocks = polkadot_sdk::frame_support::traits::ConstU32<50>;
-    type MaxReserves = ();
-    type ReserveIdentifier = [u8; 8];
-    type Balance = Balance;
-    type RuntimeEvent = RuntimeEvent;
-    type DustRemoval = ();
-    type ExistentialDeposit = polkadot_sdk::frame_support::traits::ConstU128<500>;
-    type AccountStore = System;
-    type WeightInfo = ();
-    type FreezeIdentifier = RuntimeFreezeReason;
-    type MaxFreezes = polkadot_sdk::frame_support::traits::ConstU32<8>;
-    type RuntimeHoldReason = RuntimeHoldReason;
-    type RuntimeFreezeReason = RuntimeFreezeReason;
-}
-
-impl polkadot_sdk::pallet_sudo::Config for Runtime {
-    type RuntimeEvent = RuntimeEvent;
-    type RuntimeCall = RuntimeCall;
-    type WeightInfo = ();
-}
-
-impl polkadot_sdk::pallet_transaction_payment::Config for Runtime {
-    type RuntimeEvent = RuntimeEvent;
-    type OnChargeTransaction = polkadot_sdk::pallet_transaction_payment::FungibleAdapter<Balances, ()>;
-    type OperationalFeeMultiplier = polkadot_sdk::frame_support::traits::ConstU8<5>;
-    type WeightToFee = polkadot_sdk::frame_support::weights::IdentityFee<Balance>;
-    type LengthToFee = polkadot_sdk::frame_support::weights::IdentityFee<Balance>;
-    type FeeMultiplierUpdate = ();
-}
-
-pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: create_runtime_str!("moral-money"),
-    impl_name: create_runtime_str!("moral-money"),
-    authoring_version: 1,
-    spec_version: 1,
-    impl_version: 1,
-    apis: RUNTIME_API_VERSIONS,
-    transaction_version: 1,
-    state_version: 1,
-};
-
-impl_runtime_apis! {
-    impl polkadot_sdk::sp_api::Core<Block> for Runtime {
-        fn version() -> RuntimeVersion { VERSION }
-        fn execute_block(block: Block) { 
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::execute_block(block); 
-        }
-        fn initialize_block(header: &<Block as BlockT>::Header) -> ExtrinsicInclusionMode {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::initialize_block(header)
-        }
-    }
-
-    impl polkadot_sdk::sp_api::Metadata<Block> for Runtime {
-        fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) }
-        fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { Runtime::metadata_at_version(version) }
-        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { Runtime::metadata_versions() }
-    }
-
-    impl polkadot_sdk::sp_block_builder::BlockBuilder<Block> for Runtime {
-        fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> ApplyExtrinsicResult {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::apply_extrinsic(extrinsic)
-        }
-        fn finalize_block() -> <Block as BlockT>::Header {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::finalize_block()
-        }
-        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
-            data.create_extrinsics()
-        }
-        fn check_inherents(block: Block, data: polkadot_sdk::sp_inherents::InherentData) -> polkadot_sdk::sp_inherents::CheckInherentsResult {
-            data.check_extrinsics(&block)
-        }
-    }
-
-    impl polkadot_sdk::sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
-        fn validate_transaction(source: TransactionSource, tx: <Block as BlockT>::Extrinsic, block_hash: <Block as BlockT>::Hash) -> polkadot_sdk::sp_runtime::transaction_validity::TransactionValidity {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::validate_transaction(source, tx, block_hash)
-        }
-    }
-
-    impl polkadot_sdk::sp_offchain::OffchainWorkerApi<Block> for Runtime {
-        fn offchain_worker(header: &<Block as BlockT>::Header) {
-            polkadot_sdk::frame_executive::Executive::<Runtime, Block, polkadot_sdk::frame_system::ChainContext<Runtime>, Runtime, AllPalletsWithSystem>::offchain_worker(header)
-        }
-    }
-
-    impl polkadot_sdk::sp_session::SessionKeys<Block> for Runtime {
-        fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { Default::default() }
-        fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { None }
-    }
-}
+[features]
+default = ["std"]
+std = [
+    "parity-scale-codec/std",
+    "scale-info/std",
+    "polkadot-sdk/std",
+    "pallet-reputation/std",
+    "pallet-projects/std",
+    "pallet-governance/std",
+]
+runtime-benchmarks = [
+    "polkadot-sdk/runtime-benchmarks",
+    "pallet-reputation/runtime-benchmarks",
+]
+try-runtime = [
+    "polkadot-sdk/try-runtime",
+    "pallet-reputation/try-runtime",
+]
