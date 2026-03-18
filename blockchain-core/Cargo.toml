@@ -62,6 +62,6 @@ opt-level = 3
 lto = "fat"
 codegen-units = 1
 
-# O FIX CIRÚRGICO PARA O FFLONK
+# O FIX CIRÚRGICO PARA O FFLONK (Com o truque do .git)
 [patch."https://github.com/w3f/fflonk"]
-fflonk = { git = "https://github.com/w3f/fflonk", rev = "be95d4c971b1d15b5badfc06ff13f5c07987d484" }
+fflonk = { git = "https://github.com/w3f/fflonk.git", rev = "be95d4c971b1d15b5badfc06ff13f5c07987d484" }
