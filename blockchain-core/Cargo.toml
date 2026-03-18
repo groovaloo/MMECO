@@ -14,37 +14,38 @@ edition = "2021"
 repository = "https://github.com/nuno/mmeco"
 
 [workspace.dependencies]
-polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
+# Mudámos TUDO para o ramo "master" para fugir do bug do fflonk da versão anterior!
+polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
 
-sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-service = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-network = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sc-transaction-pool-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
+sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-service = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-network = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sc-transaction-pool-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
 
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-keyring = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
-sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
+sp-io = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-keyring = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sp-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
+sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
 
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
+frame-system = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
+frame-support = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master", default-features = false }
 
-substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
+substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", branch = "master" }
 
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = { version = "1.0", default-features = false }
@@ -61,7 +62,3 @@ panic = "unwind"
 opt-level = 3
 lto = "fat"
 codegen-units = 1
-
-# O FIX CIRÚRGICO PARA O FFLONK (Com o truque do .git)
-[patch."https://github.com/w3f/fflonk"]
-fflonk = { git = "https://github.com/w3f/fflonk.git", rev = "be95d4c971b1d15b5badfc06ff13f5c07987d484" }
