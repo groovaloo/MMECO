@@ -24,6 +24,7 @@ pub type Balance = u128;
 pub type BlockNumber = u32;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 
+// REMOVIDA A PORTAGEM (ChargeTransactionPayment) PORQUE TIRÁMOS A PALETE DAS TAXAS
 pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
     polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
@@ -56,6 +57,7 @@ pub mod runtime {
     #[runtime::pallet_index(3)]
     pub type Sudo = polkadot_sdk::pallet_sudo;
     
+    // AS 3 PALETES MMECO
     #[runtime::pallet_index(4)]
     pub type Reputation = crate::pallet_reputation;
     #[runtime::pallet_index(5)]
@@ -63,6 +65,9 @@ pub mod runtime {
     #[runtime::pallet_index(6)]
     pub type Governance = crate::pallet_governance;
 }
+
+// A CHAVE MÁGICA QUE ABRE A PORTA (Resolve os erros E0412 e E0433)
+pub use crate::runtime::*;
 
 #[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
