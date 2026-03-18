@@ -7,14 +7,14 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
-    self, create_runtime_str, generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+    generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
     MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, transaction_validity::{TransactionSource, TransactionValidity},
 };
-use polkadot_sdk::sp_version::{self, RuntimeVersion};
-use parity_scale_codec::{Encode, Decode};
+use polkadot_sdk::sp_version::RuntimeVersion;
 use polkadot_sdk::sp_std::prelude::*;
+use polkadot_sdk::sp_std::borrow::Cow;
 
-// Importação correta das tuas paletes
+// NOMES EXATOS DAS PALETES
 pub use pallet_reputation;
 pub use pallet_projects;
 pub use pallet_governance;
@@ -40,7 +40,7 @@ pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 #[polkadot_sdk::frame_support::runtime]
-pub mod runtime { // ADICIONADO 'pub' AQUI para resolver o erro 1
+pub mod runtime {
     #[runtime::runtime]
     #[runtime::derive(
         RuntimeCall, RuntimeEvent, RuntimeError, RuntimeOrigin,
@@ -58,7 +58,6 @@ pub mod runtime { // ADICIONADO 'pub' AQUI para resolver o erro 1
     #[runtime::pallet_index(3)]
     pub type Sudo = polkadot_sdk::pallet_sudo;
     
-    // CORREÇÃO DO TRANSACTION PAYMENT
     #[runtime::pallet_index(4)]
     pub type TransactionPayment = polkadot_sdk::pallet_transaction_payment;
     
@@ -70,7 +69,7 @@ pub mod runtime { // ADICIONADO 'pub' AQUI para resolver o erro 1
     pub type Governance = crate::pallet_governance;
 }
 
-pub use runtime::*; // AGORA FUNCIONA porque o módulo é público!
+pub use runtime::*;
 
 #[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
@@ -121,8 +120,8 @@ impl polkadot_sdk::pallet_transaction_payment::Config for Runtime {
 }
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: create_runtime_str!("moral-money"),
-    impl_name: create_runtime_str!("moral-money"),
+    spec_name: Cow::Borrowed("moral-money"),
+    impl_name: Cow::Borrowed("moral-money"),
     authoring_version: 1,
     spec_version: 1,
     impl_version: 1,
