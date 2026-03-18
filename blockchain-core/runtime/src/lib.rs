@@ -14,6 +14,11 @@ use polkadot_sdk::sp_version::{self, RuntimeVersion};
 use polkadot_sdk::parity_scale_codec::{Encode, Decode};
 use polkadot_sdk::sp_std::prelude::*;
 
+// AS 3 LINHAS MÁGICAS QUE FALTAVAM NO TEU CÓDIGO
+pub use reputation;
+pub use pallet_projects;
+pub use pallet_governance;
+
 pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 pub type Balance = u128;
