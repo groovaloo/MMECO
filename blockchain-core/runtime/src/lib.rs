@@ -54,16 +54,21 @@ pub mod runtime {
     #[runtime::pallet_index(2)]
     pub type Balances = polkadot_sdk::pallet_balances;
     
-    // REMOVIDOS OS FANTASMAS: SUDO E TAXAS! AS TUAS PALETES AVANÇAM PARA A LINHA DA FRENTE.
+    // AS NOSSAS MÁQUINAS DE MINERAÇÃO (AURA + GRANDPA)
     #[runtime::pallet_index(3)]
-    pub type Reputation = crate::pallet_reputation;
+    pub type Aura = polkadot_sdk::pallet_aura;
     #[runtime::pallet_index(4)]
-    pub type Projects = crate::pallet_projects;
+    pub type Grandpa = polkadot_sdk::pallet_grandpa;
+
+    // AS TUAS PALETES MMECO
     #[runtime::pallet_index(5)]
+    pub type Reputation = crate::pallet_reputation;
+    #[runtime::pallet_index(6)]
+    pub type Projects = crate::pallet_projects;
+    #[runtime::pallet_index(7)]
     pub type Governance = crate::pallet_governance;
 }
 
-// A CHAVE DA PORTA VOLTOU AO SÍTIO CERTO
 pub use runtime::*;
 
 #[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
@@ -78,8 +83,8 @@ impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 
 impl polkadot_sdk::pallet_timestamp::Config for Runtime {
     type Moment = u64;
-    type OnTimestampSet = ();
-    type MinimumPeriod = polkadot_sdk::frame_support::traits::ConstU64<3000>;
+    type OnTimestampSet = Aura; // O Aura usa o relógio para saber quando minar
+    type MinimumPeriod = polkadot_sdk::frame_support::traits::ConstU64<1500>; // Metade de 3 segundos
     type WeightInfo = ();
 }
 
@@ -97,6 +102,26 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type MaxFreezes = polkadot_sdk::frame_support::traits::ConstU32<8>;
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
+}
+
+// CONFIGURAÇÃO DO AURA (MINEIRO)
+impl polkadot_sdk::pallet_aura::Config for Runtime {
+    type AuthorityId = polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId;
+    type DisabledValidators = ();
+    type MaxAuthorities = polkadot_sdk::frame_support::traits::ConstU32<32>;
+    type AllowMultipleBlocksPerSlot = polkadot_sdk::frame_support::traits::ConstBool<false>;
+    type SlotDuration = polkadot_sdk::pallet_timestamp::SlotDuration<Self>;
+}
+
+// CONFIGURAÇÃO DO GRANDPA (FINALIZADOR)
+impl polkadot_sdk::pallet_grandpa::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type WeightInfo = ();
+    type MaxAuthorities = polkadot_sdk::frame_support::traits::ConstU32<32>;
+    type MaxNominators = polkadot_sdk::frame_support::traits::ConstU32<0>;
+    type MaxSetIdSessionEntries = polkadot_sdk::frame_support::traits::ConstU64<0>;
+    type KeyOwnerProof = polkadot_sdk::sp_core::Void;
+    type EquivocationReportSystem = ();
 }
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
@@ -157,5 +182,40 @@ impl_runtime_apis! {
     impl polkadot_sdk::sp_session::SessionKeys<Block> for Runtime {
         fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { Default::default() }
         fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { None }
+    }
+
+    // COMUNICAÇÃO DE MINERAÇÃO: O NÓ (COMPUTADOR) FALA COM O AURA AQUI
+    impl polkadot_sdk::sp_consensus_aura::AuraApi<Block, polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> for Runtime {
+        fn slot_duration() -> polkadot_sdk::sp_consensus_aura::SlotDuration {
+            polkadot_sdk::sp_consensus_aura::SlotDuration::from_millis(3000)
+        }
+        fn authorities() -> Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
+            Aura::authorities().into_inner()
+        }
+    }
+
+    // COMUNICAÇÃO DE CARIMBO: O NÓ FALA COM O GRANDPA AQUI
+    impl polkadot_sdk::sp_consensus_grandpa::GrandpaApi<Block> for Runtime {
+        fn grandpa_authorities() -> polkadot_sdk::sp_consensus_grandpa::AuthorityList {
+            Grandpa::grandpa_authorities()
+        }
+        fn current_set_id() -> polkadot_sdk::sp_consensus_grandpa::SetId {
+            Grandpa::current_set_id()
+        }
+        fn submit_report_equivocation_unsigned_extrinsic(
+            _equivocation_proof: polkadot_sdk::sp_consensus_grandpa::EquivocationProof<
+                <Block as BlockT>::Hash,
+                BlockNumber,
+            >,
+            _key_owner_proof: polkadot_sdk::sp_consensus_grandpa::OpaqueKeyOwnershipProof,
+        ) -> Option<()> {
+            None
+        }
+        fn generate_key_ownership_proof(
+            _set_id: polkadot_sdk::sp_consensus_grandpa::SetId,
+            _authority_id: polkadot_sdk::sp_consensus_grandpa::AuthorityId,
+        ) -> Option<polkadot_sdk::sp_consensus_grandpa::OpaqueKeyOwnershipProof> {
+            None
+        }
     }
 }
