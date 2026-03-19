@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 # Destrancámos o cofre do Aura e do Grandpa nas 'features'
-polkadot-sdk = { workspace = true, features = ["runtime", "pallet-aura", "pallet-grandpa"] }
+polkadot-sdk = { workspace = true, features = ["runtime", "pallet-aura", "pallet-grandpa", "pallet-balances"] }
 
 # Codificação base (Sincronizado com o Workspace)
 parity-scale-codec = { workspace = true }
@@ -27,6 +27,7 @@ std = [
     "parity-scale-codec/std",
     "scale-info/std",
     "polkadot-sdk/std",
+    "polkadot-sdk/pallet-balances",
     "pallet-reputation/std",
     "pallet-projects/std",
     "pallet-governance/std",
