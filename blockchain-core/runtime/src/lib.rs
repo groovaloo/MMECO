@@ -8,7 +8,7 @@ use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
     generic, traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-    MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, transaction_validity::{TransactionSource, TransactionValidity},
+    MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, transaction_validity::TransactionSource,
 };
 use polkadot_sdk::sp_version::RuntimeVersion;
 use polkadot_sdk::sp_std::prelude::*;
@@ -54,13 +54,11 @@ pub mod runtime {
     #[runtime::pallet_index(2)]
     pub type Balances = polkadot_sdk::pallet_balances;
     
-    // AS NOSSAS MÁQUINAS DE MINERAÇÃO (AURA + GRANDPA)
     #[runtime::pallet_index(3)]
     pub type Aura = polkadot_sdk::pallet_aura;
     #[runtime::pallet_index(4)]
     pub type Grandpa = polkadot_sdk::pallet_grandpa;
 
-    // AS TUAS PALETES MMECO
     #[runtime::pallet_index(5)]
     pub type Reputation = crate::pallet_reputation;
     #[runtime::pallet_index(6)]
@@ -83,8 +81,8 @@ impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
 
 impl polkadot_sdk::pallet_timestamp::Config for Runtime {
     type Moment = u64;
-    type OnTimestampSet = Aura; // O Aura usa o relógio para saber quando minar
-    type MinimumPeriod = polkadot_sdk::frame_support::traits::ConstU64<1500>; // Metade de 3 segundos
+    type OnTimestampSet = Aura;
+    type MinimumPeriod = polkadot_sdk::frame_support::traits::ConstU64<1500>;
     type WeightInfo = ();
 }
 
@@ -104,7 +102,6 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type RuntimeFreezeReason = RuntimeFreezeReason;
 }
 
-// CONFIGURAÇÃO DO AURA (MINEIRO)
 impl polkadot_sdk::pallet_aura::Config for Runtime {
     type AuthorityId = polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId;
     type DisabledValidators = ();
@@ -113,7 +110,6 @@ impl polkadot_sdk::pallet_aura::Config for Runtime {
     type SlotDuration = polkadot_sdk::pallet_timestamp::SlotDuration<Self>;
 }
 
-// CONFIGURAÇÃO DO GRANDPA (FINALIZADOR)
 impl polkadot_sdk::pallet_grandpa::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type WeightInfo = ();
@@ -184,7 +180,6 @@ impl_runtime_apis! {
         fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { None }
     }
 
-    // COMUNICAÇÃO DE MINERAÇÃO: O NÓ (COMPUTADOR) FALA COM O AURA AQUI
     impl polkadot_sdk::sp_consensus_aura::AuraApi<Block, polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> for Runtime {
         fn slot_duration() -> polkadot_sdk::sp_consensus_aura::SlotDuration {
             polkadot_sdk::sp_consensus_aura::SlotDuration::from_millis(3000)
@@ -194,7 +189,6 @@ impl_runtime_apis! {
         }
     }
 
-    // COMUNICAÇÃO DE CARIMBO: O NÓ FALA COM O GRANDPA AQUI
     impl polkadot_sdk::sp_consensus_grandpa::GrandpaApi<Block> for Runtime {
         fn grandpa_authorities() -> polkadot_sdk::sp_consensus_grandpa::AuthorityList {
             Grandpa::grandpa_authorities()
