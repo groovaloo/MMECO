@@ -5,8 +5,8 @@ edition = "2021"
 publish = false
 
 [dependencies]
-# Motor principal centralizado no workspace
-polkadot-sdk = { workspace = true, features = ["runtime"] }
+# Destrancámos o cofre do Aura e do Grandpa nas 'features'
+polkadot-sdk = { workspace = true, features = ["runtime", "pallet-aura", "pallet-grandpa"] }
 
 # Codificação base (Sincronizado com o Workspace)
 parity-scale-codec = { workspace = true }
