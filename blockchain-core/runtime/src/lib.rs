@@ -4,16 +4,15 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use polkadot_sdk::sp_std::borrow::Cow;
 use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
     generic, 
     traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-    MultiSignature, ExtrinsicInclusionMode, ApplyExtrinsicResult, 
-    transaction_validity::TransactionSource,
+    MultiSignature,
 };
 use polkadot_sdk::sp_version::RuntimeVersion;
-use polkadot_sdk::sp_std::prelude::*;
 
 pub use pallet_reputation;
 pub use pallet_projects;
@@ -133,12 +132,12 @@ impl polkadot_sdk::pallet_grandpa::Config for Runtime {
 }
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: alloc::borrow::Cow::Borrowed("moral-money"),
-    impl_name: alloc::borrow::Cow::Borrowed("moral-money"),
+    spec_name: Cow::Borrowed("moral-money"),
+    impl_name: Cow::Borrowed("moral-money"),
     authoring_version: 1,
     spec_version: 1,
     impl_version: 1,
-    apis: RUNTIME_API_VERSIONS,
+    apis: polkadot_sdk::sp_version::create_apis_vec!([]),
     transaction_version: 1,
     system_version: 1,
 };
@@ -159,7 +158,7 @@ impl_runtime_apis! {
             >::execute_block(block); 
         }
         
-        fn initialize_block(header: &Header) -> ExtrinsicInclusionMode {
+        fn initialize_block(header: &Header) -> polkadot_sdk::sp_runtime::ExtrinsicInclusionMode {
             polkadot_sdk::frame_executive::Executive::
                 Runtime, 
                 Block, 
@@ -179,13 +178,13 @@ impl_runtime_apis! {
             Runtime::metadata_at_version(version) 
         }
         
-        fn metadata_versions() -> Vec<u32> { 
+        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { 
             Runtime::metadata_versions() 
         }
     }
 
     impl polkadot_sdk::sp_block_builder::BlockBuilder<Block> for Runtime {
-        fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> ApplyExtrinsicResult {
+        fn apply_extrinsic(extrinsic: <Block as BlockT>::Extrinsic) -> polkadot_sdk::sp_runtime::ApplyExtrinsicResult {
             polkadot_sdk::frame_executive::Executive::
                 Runtime, 
                 Block, 
@@ -205,7 +204,7 @@ impl_runtime_apis! {
             >::finalize_block()
         }
         
-        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
+        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> polkadot_sdk::sp_std::vec::Vec<<Block as BlockT>::Extrinsic> {
             data.create_extrinsics()
         }
         
@@ -219,7 +218,7 @@ impl_runtime_apis! {
 
     impl polkadot_sdk::sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
         fn validate_transaction(
-            source: TransactionSource, 
+            source: polkadot_sdk::sp_runtime::transaction_validity::TransactionSource,
             tx: <Block as BlockT>::Extrinsic, 
             block_hash: Hash
         ) -> polkadot_sdk::sp_runtime::transaction_validity::TransactionValidity {
@@ -246,13 +245,13 @@ impl_runtime_apis! {
     }
 
     impl polkadot_sdk::sp_session::SessionKeys<Block> for Runtime {
-        fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { 
+        fn generate_session_keys(_seed: Option<polkadot_sdk::sp_std::vec::Vec<u8>>) -> polkadot_sdk::sp_std::vec::Vec<u8> { 
             Default::default() 
         }
         
         fn decode_session_keys(
-            _encoded: Vec<u8>
-        ) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { 
+            _encoded: polkadot_sdk::sp_std::vec::Vec<u8>
+        ) -> Option<polkadot_sdk::sp_std::vec::Vec<(polkadot_sdk::sp_std::vec::Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { 
             None 
         }
     }
@@ -262,7 +261,7 @@ impl_runtime_apis! {
             polkadot_sdk::sp_consensus_aura::SlotDuration::from_millis(3000)
         }
         
-        fn authorities() -> Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
+        fn authorities() -> polkadot_sdk::sp_std::vec::Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
             polkadot_sdk::pallet_aura::Pallet::<Runtime>::authorities().into_inner()
         }
     }
