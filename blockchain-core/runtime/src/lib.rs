@@ -12,7 +12,7 @@ use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
     generic, 
-    traits::{BlakeTwo256, BlockT, IdentifyAccount, Verify},
+    traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
     MultiSignature,
 };
 use polkadot_sdk::sp_version::RuntimeVersion;
@@ -42,7 +42,7 @@ pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 #[polkadot_sdk::frame_support::runtime]
-mod runtime {
+mod runtime_impl {
     #[runtime::runtime]
     #[runtime::derive(
         RuntimeCall, RuntimeEvent, RuntimeError, RuntimeOrigin,
@@ -71,14 +71,39 @@ mod runtime {
     pub type Governance = crate::pallet_governance;
 }
 
-pub use runtime::Runtime;
-pub use runtime::{RuntimeCall, RuntimeEvent, RuntimeOrigin};
+pub use runtime_impl::Runtime;
+pub use runtime_impl::{RuntimeCall, RuntimeEvent, RuntimeOrigin};
+pub use runtime_impl::RuntimeFreezeReason;
+pub use runtime_impl::RuntimeHoldReason;
 
-#[derive_impl(polkadot_sdk::frame_system::config_preludes::TestDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
     type Block = Block;
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
+    type BaseCallFilter = polkadot_sdk::frame_support::traits::Everything;
+    type RuntimeOrigin = RuntimeOrigin;
+    type RuntimeCall = RuntimeCall;
+    type RuntimeTask = RuntimeTask;
+    type Hash = Hash;
+    type Hashing = BlakeTwo256;
+    type AccountId = AccountId;
+    type Lookup = polkadot_sdk::sp_runtime::traits::AccountIdLookup<AccountId, ()>;
+    type RuntimeEvent = RuntimeEvent;
+    type BlockHashCount = polkadot_sdk::frame_support::traits::ConstU32<256>;
+    type DbWeight = ();
+    type Version = ();
+    type PalletInfo = polkadot_sdk::frame_support::traits::PalletInfoAccess;
+    type OnNewAccount = ();
+    type OnKilledAccount = ();
+    type SystemWeightInfo = ();
+    type BlockWeights = ();
+    type BlockLength = ();
+    type SS58Prefix = polkadot_sdk::frame_support::traits::ConstU16<42>;
+    type OnSetCode = ();
+    type MaxConsumers = polkadot_sdk::frame_support::traits::ConstU32<16>;
+    type Nonce = u32;
 }
+
+use runtime_impl::RuntimeTask;
 
 impl pallet_reputation::Config for Runtime { 
     type RuntimeEvent = RuntimeEvent; 
@@ -157,7 +182,7 @@ impl_runtime_apis! {
                 Block, 
                 polkadot_sdk::frame_system::ChainContext<Runtime>, 
                 Runtime, 
-                runtime::AllPalletsWithSystem
+                runtime_impl::AllPalletsWithSystem
             >::execute_block(block); 
         }
         
@@ -167,7 +192,7 @@ impl_runtime_apis! {
                 Block, 
                 polkadot_sdk::frame_system::ChainContext<Runtime>, 
                 Runtime, 
-                runtime::AllPalletsWithSystem
+                runtime_impl::AllPalletsWithSystem
             >::initialize_block(header)
         }
     }
@@ -193,7 +218,7 @@ impl_runtime_apis! {
                 Block, 
                 polkadot_sdk::frame_system::ChainContext<Runtime>, 
                 Runtime, 
-                runtime::AllPalletsWithSystem
+                runtime_impl::AllPalletsWithSystem
             >::apply_extrinsic(extrinsic)
         }
         
@@ -203,7 +228,7 @@ impl_runtime_apis! {
                 Block, 
                 polkadot_sdk::frame_system::ChainContext<Runtime>, 
                 Runtime, 
-                runtime::AllPalletsWithSystem
+                runtime_impl::AllPalletsWithSystem
             >::finalize_block()
         }
         
@@ -230,7 +255,7 @@ impl_runtime_apis! {
                 Block, 
                 polkadot_sdk::frame_system::ChainContext<Runtime>, 
                 Runtime, 
-                runtime::AllPalletsWithSystem
+                runtime_impl::AllPalletsWithSystem
             >::validate_transaction(source, tx, block_hash)
         }
     }
@@ -242,7 +267,7 @@ impl_runtime_apis! {
                 Block, 
                 polkadot_sdk::frame_system::ChainContext<Runtime>, 
                 Runtime, 
-                runtime::AllPalletsWithSystem
+                runtime_impl::AllPalletsWithSystem
             >::offchain_worker(header)
         }
     }
