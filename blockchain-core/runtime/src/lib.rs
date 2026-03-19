@@ -1,15 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![recursion_limit = "256"]
 
+extern crate alloc;
+
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use alloc::vec::Vec;
 use polkadot_sdk::sp_std::borrow::Cow;
 use polkadot_sdk::frame_support::derive_impl;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
     generic, 
-    traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+    traits::{BlakeTwo256, BlockT, IdentifyAccount, Verify},
     MultiSignature,
 };
 use polkadot_sdk::sp_version::RuntimeVersion;
@@ -71,7 +74,7 @@ mod runtime {
 pub use runtime::Runtime;
 pub use runtime::{RuntimeCall, RuntimeEvent, RuntimeOrigin};
 
-#[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
+#[derive_impl(polkadot_sdk::frame_system::config_preludes::TestDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
     type Block = Block;
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
@@ -178,7 +181,7 @@ impl_runtime_apis! {
             Runtime::metadata_at_version(version) 
         }
         
-        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { 
+        fn metadata_versions() -> Vec<u32> { 
             Runtime::metadata_versions() 
         }
     }
@@ -204,7 +207,7 @@ impl_runtime_apis! {
             >::finalize_block()
         }
         
-        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> polkadot_sdk::sp_std::vec::Vec<<Block as BlockT>::Extrinsic> {
+        fn inherent_extrinsics(data: polkadot_sdk::sp_inherents::InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
             data.create_extrinsics()
         }
         
@@ -245,13 +248,13 @@ impl_runtime_apis! {
     }
 
     impl polkadot_sdk::sp_session::SessionKeys<Block> for Runtime {
-        fn generate_session_keys(_seed: Option<polkadot_sdk::sp_std::vec::Vec<u8>>) -> polkadot_sdk::sp_std::vec::Vec<u8> { 
+        fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { 
             Default::default() 
         }
         
         fn decode_session_keys(
-            _encoded: polkadot_sdk::sp_std::vec::Vec<u8>
-        ) -> Option<polkadot_sdk::sp_std::vec::Vec<(polkadot_sdk::sp_std::vec::Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { 
+            _encoded: Vec<u8>
+        ) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { 
             None 
         }
     }
@@ -261,7 +264,7 @@ impl_runtime_apis! {
             polkadot_sdk::sp_consensus_aura::SlotDuration::from_millis(3000)
         }
         
-        fn authorities() -> polkadot_sdk::sp_std::vec::Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
+        fn authorities() -> Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
             polkadot_sdk::pallet_aura::Pallet::<Runtime>::authorities().into_inner()
         }
     }
