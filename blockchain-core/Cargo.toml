@@ -14,7 +14,7 @@ edition = "2021"
 repository = "https://github.com/nuno/mmeco"
 
 [workspace.dependencies]
-# Mudámos TUDO para o ramo "stable2412" para fugir da biblioteca apagada (ark-vrf yanked) do master!
+# Tudo em stable2412 - seguro e estável
 polkadot-sdk = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false }
 substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412" }
 
@@ -59,7 +59,6 @@ tokio = { version = "1.36", features = ["full"] }
 
 [profile.release]
 panic = "unwind"
-
 opt-level = 3
 lto = "fat"
 codegen-units = 1
