@@ -75,9 +75,17 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
 }
 
-impl pallet_reputation::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-impl pallet_projects::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
+impl pallet_reputation::Config for Runtime { 
+    type RuntimeEvent = RuntimeEvent; 
+}
+
+impl pallet_projects::Config for Runtime { 
+    type RuntimeEvent = RuntimeEvent; 
+}
+
+impl pallet_governance::Config for Runtime { 
+    type RuntimeEvent = RuntimeEvent; 
+}
 
 impl polkadot_sdk::pallet_timestamp::Config for Runtime {
     type Moment = u64;
@@ -143,9 +151,15 @@ impl_runtime_apis! {
     }
 
     impl polkadot_sdk::sp_api::Metadata<Block> for Runtime {
-        fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) }
-        fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { Runtime::metadata_at_version(version) }
-        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { Runtime::metadata_versions() }
+        fn metadata() -> polkadot_sdk::sp_core::OpaqueMetadata { 
+            polkadot_sdk::sp_core::OpaqueMetadata::new(Runtime::metadata().into()) 
+        }
+        fn metadata_at_version(version: u32) -> Option<polkadot_sdk::sp_core::OpaqueMetadata> { 
+            Runtime::metadata_at_version(version) 
+        }
+        fn metadata_versions() -> polkadot_sdk::sp_std::vec::Vec<u32> { 
+            Runtime::metadata_versions() 
+        }
     }
 
     impl polkadot_sdk::sp_block_builder::BlockBuilder<Block> for Runtime {
@@ -176,8 +190,12 @@ impl_runtime_apis! {
     }
 
     impl polkadot_sdk::sp_session::SessionKeys<Block> for Runtime {
-        fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { Default::default() }
-        fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { None }
+        fn generate_session_keys(_seed: Option<Vec<u8>>) -> Vec<u8> { 
+            Default::default() 
+        }
+        fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { 
+            None 
+        }
     }
 
     impl polkadot_sdk::sp_consensus_aura::AuraApi<Block, polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> for Runtime {
@@ -197,7 +215,7 @@ impl_runtime_apis! {
             Grandpa::current_set_id()
         }
         fn submit_report_equivocation_unsigned_extrinsic(
-            _equivocation_proof: polkadot_sdk::sp_consensus_grandpa::EquivocationProof<
+            _equivocation_proof: polkadot_sdk::sp_consensus_grandpa::EquivocationProof
                 <Block as BlockT>::Hash,
                 BlockNumber,
             >,
