@@ -1,5 +1,5 @@
 [package]
-name = "runtime"
+name = "mmeco-runtime"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,18 +7,30 @@ edition = "2021"
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.11.1", default-features = false, features = ["derive"] }
 
-frame-support = { version = "38.0.0", default-features = false }
-frame-system = { version = "38.0.0", default-features = false }
-frame-executive = { version = "38.0.0", default-features = false }
-sp-runtime = { version = "39.0.0", default-features = false }
-sp-api = { version = "34.0.0", default-features = false }
-sp-std = { version = "14.0.0", default-features = false }
-sp-core = { version = "34.0.0", default-features = false }
-sp-version = { version = "37.0.0", default-features = false }
+# Peças do Motor (FRAME)
+frame-support = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+frame-system = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+frame-executive = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
 
-reputation = { path = "../pallets/reputation", default-features = false }
-pallet-projects = { path = "../pallets/projects", default-features = false }
-pallet-governance = { path = "../pallets/governance", default-features = false }
+# Paletes Essenciais (O que faltava!)
+pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+pallet-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+pallet-aura = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+pallet-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+
+# Primitivos
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+sp-api = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+sp-std = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+sp-version = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", branch = "release-polkadot-v1.6.0", default-features = false }
+
+# Tuas Pallets Locais (Caminhos corrigidos)
+pallet-reputation = { path = "../../pallets/reputation", default-features = false }
+pallet-projects = { path = "../../pallets/projects", default-features = false }
+pallet-governance = { path = "../../pallets/governance", default-features = false }
 
 [features]
 default = ["std"]
@@ -28,12 +40,16 @@ std = [
     "frame-support/std",
     "frame-system/std",
     "frame-executive/std",
+    "pallet-balances/std",
+    "pallet-timestamp/std",
+    "pallet-aura/std",
+    "pallet-grandpa/std",
     "sp-runtime/std",
     "sp-api/std",
     "sp-std/std",
     "sp-core/std",
     "sp-version/std",
-    "reputation/std",
+    "pallet-reputation/std",
     "pallet-projects/std",
     "pallet-governance/std",
 ]
