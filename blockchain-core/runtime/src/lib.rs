@@ -153,7 +153,7 @@ impl pallet_governance::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
 
-type Executive = polkadot_sdk::frame_executive::Executive
+type Executive = polkadot_sdk::frame_executive::Executive<
     Runtime,
     Block,
     polkadot_sdk::frame_system::ChainContext<Runtime>,
