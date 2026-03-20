@@ -72,8 +72,7 @@ mod runtime_impl {
 
 pub use runtime_impl::Runtime;
 pub use runtime_impl::{RuntimeCall, RuntimeEvent, RuntimeOrigin, RuntimeTask};
-pub use runtime_impl::RuntimeFreezeReason;
-pub use runtime_impl::RuntimeHoldReason;
+pub use runtime_impl::{RuntimeFreezeReason, RuntimeHoldReason};
 
 impl polkadot_sdk::frame_system::Config for Runtime {
     type Block = Block;
@@ -100,6 +99,12 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type OnSetCode = ();
     type MaxConsumers = polkadot_sdk::frame_support::traits::ConstU32<16>;
     type Nonce = u32;
+    type ExtensionsWeightInfo = ();
+    type SingleBlockMigrations = ();
+    type MultiBlockMigrator = ();
+    type PreInherents = ();
+    type PostInherents = ();
+    type PostTransactions = ();
 }
 
 impl pallet_reputation::Config for Runtime { 
