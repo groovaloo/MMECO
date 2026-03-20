@@ -17,7 +17,7 @@ use polkadot_sdk::sp_runtime::{
 use polkadot_sdk::sp_version::RuntimeVersion;
 use polkadot_sdk::frame_support::{
     construct_runtime, parameter_types,
-    traits::{ConstU128, ConstU16, ConstU32, ConstU64, ConstU8, Everything},
+    traits::{ConstU128, ConstU16, ConstU32, ConstU64, Everything},
 };
 
 pub use pallet_reputation;
@@ -44,8 +44,6 @@ pub type SignedExtra = (
 
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-pub type SignedBlock = generic::SignedBlock<Block>;
-pub type BlockId = generic::BlockId<Block>;
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("moral-money"),
@@ -61,6 +59,19 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 parameter_types! {
     pub const Version: RuntimeVersion = VERSION;
 }
+
+construct_runtime!(
+    pub struct Runtime {
+        System: polkadot_sdk::frame_system = 0,
+        Timestamp: polkadot_sdk::pallet_timestamp = 1,
+        Balances: polkadot_sdk::pallet_balances = 2,
+        Aura: polkadot_sdk::pallet_aura = 3,
+        Grandpa: polkadot_sdk::pallet_grandpa = 4,
+        Reputation: pallet_reputation = 5,
+        Projects: pallet_projects = 6,
+        Governance: pallet_governance = 7,
+    }
+);
 
 impl polkadot_sdk::frame_system::Config for Runtime {
     type BaseCallFilter = Everything;
@@ -141,19 +152,6 @@ impl pallet_projects::Config for Runtime {
 impl pallet_governance::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
 }
-
-construct_runtime!(
-    pub struct Runtime {
-        System: polkadot_sdk::frame_system = 0,
-        Timestamp: polkadot_sdk::pallet_timestamp = 1,
-        Balances: polkadot_sdk::pallet_balances = 2,
-        Aura: polkadot_sdk::pallet_aura = 3,
-        Grandpa: polkadot_sdk::pallet_grandpa = 4,
-        Reputation: pallet_reputation = 5,
-        Projects: pallet_projects = 6,
-        Governance: pallet_governance = 7,
-    }
-);
 
 type Executive = polkadot_sdk::frame_executive::Executive
     Runtime,
