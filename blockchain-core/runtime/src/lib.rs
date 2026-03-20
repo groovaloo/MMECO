@@ -10,7 +10,7 @@ use alloc::vec::Vec;
 use polkadot_sdk::sp_std::borrow::Cow;
 use polkadot_sdk::sp_api::impl_runtime_apis;
 use polkadot_sdk::sp_runtime::{
-    create_runtime_str, generic,
+    generic,
     traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
     MultiSignature,
 };
@@ -46,14 +46,14 @@ pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-    spec_name: create_runtime_str!("moral-money"),
-    impl_name: create_runtime_str!("moral-money"),
+    spec_name: Cow::Borrowed("moral-money"),
+    impl_name: Cow::Borrowed("moral-money"),
     authoring_version: 1,
     spec_version: 1,
     impl_version: 1,
     apis: polkadot_sdk::sp_version::create_apis_vec!([]),
     transaction_version: 1,
-    state_version: 1,
+    system_version: 1, // CORREÇÃO 1: Substituído state_version por system_version
 };
 
 parameter_types! {
@@ -98,6 +98,14 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type SS58Prefix = ConstU16<42>;
     type OnSetCode = ();
     type MaxConsumers = ConstU32<16>;
+    
+    // CORREÇÃO 2: Adicionados os itens em falta pedidos pelo compilador
+    type ExtensionsWeightInfo = ();
+    type SingleBlockMigrations = ();
+    type MultiBlockMigrator = ();
+    type PreInherents = ();
+    type PostInherents = ();
+    type PostTransactions = ();
 }
 
 impl polkadot_sdk::pallet_timestamp::Config for Runtime {
@@ -118,9 +126,12 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type AccountStore = polkadot_sdk::frame_system::Pallet<Runtime>;
     type WeightInfo = ();
     type FreezeIdentifier = RuntimeFreezeReason;
-    type MaxFreezes = ConstU32<8>;
+    type MaxFreezes = ConstU32;
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
+    
+    // CORREÇÃO 3: Adicionado o manipulador em falta
+    type DoneSlashHandler = (); 
 }
 
 impl polkadot_sdk::pallet_aura::Config for Runtime {
@@ -259,7 +270,8 @@ impl_runtime_apis! {
         }
 
         fn submit_report_equivocation_unsigned_extrinsic(
-            _equivocation_proof: polkadot_sdk::sp_consensus_grandpa::EquivocationProof
+            // CORREÇÃO 4: Inserido o sinal < em falta aqui
+            _equivocation_proof: polkadot_sdk::sp_consensus_grandpa::EquivocationProof<
                 <Block as BlockT>::Hash,
                 BlockNumber,
             >,
