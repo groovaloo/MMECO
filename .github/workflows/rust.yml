@@ -2,10 +2,10 @@ name: Compilar Moral Money Node
 
 on:
   push:
-    branches: [ "bld-1.3" ]
+    branches: ["**"]  # 🚀 Agora funciona em TODAS as branches automaticamente
   pull_request:
-    branches: [ "bld-1.3" ]
-  workflow_dispatch: # 🖲️ AQUI ESTÁ O TEU BOTÃO MANUAL!
+    branches: ["**"]
+  workflow_dispatch: # 🖲️ Mantém o teu botão manual
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Código
         uses: actions/checkout@v4
         
-      - name: Instalar Dependências do Sistema (C/C++ e Ferramentas)
+      - name: Instalar Dependências do Sistema
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config clang libclang-dev curl libssl-dev llvm libudev-dev make protobuf-compiler cmake autoconf automake libtool
@@ -31,17 +31,20 @@ jobs:
         run: |
           cd blockchain-core
           
-          # Limpar ficheiros que causam conflitos
+          # Limpeza de segurança para evitar conflitos de cache
           rm -f rust-toolchain.toml rust-toolchain Cargo.lock
           
-          # Atualizar a lista de pacotes
+          # Atualizar dependências para garantir que lê os teus novos Cargo.toml
           cargo update
           
-          # Indicar ao sistema onde está o libclang e compilar!
+          # Definir o caminho do Clang (essencial para o Substrate)
           export LIBCLANG_PATH=$(llvm-config --libdir)
+          
+          # Compilar apenas o nó principal
           cargo build --release -p mmeco-node
           
       - name: Guardar Binário
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: mmeco-node-final
