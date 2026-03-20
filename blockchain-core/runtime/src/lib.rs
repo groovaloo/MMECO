@@ -14,10 +14,6 @@ use polkadot_sdk::sp_version::RuntimeVersion;
 use polkadot_sdk::sp_std::prelude::*;
 use polkadot_sdk::sp_std::borrow::Cow;
 
-pub use pallet_reputation;
-pub use pallet_projects;
-pub use pallet_governance;
-
 pub type Signature = MultiSignature;
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 pub type Balance = u128;
@@ -46,7 +42,6 @@ pub mod runtime {
         RuntimeLockId, RuntimeTask,
     )]
     pub struct Runtime;
-}
 
     #[runtime::pallet_index(0)]
     pub type System = polkadot_sdk::frame_system;
@@ -54,33 +49,17 @@ pub mod runtime {
     pub type Timestamp = polkadot_sdk::pallet_timestamp;
     #[runtime::pallet_index(2)]
     pub type Balances = polkadot_sdk::pallet_balances;
-    
     #[runtime::pallet_index(3)]
     pub type Aura = polkadot_sdk::pallet_aura;
     #[runtime::pallet_index(4)]
     pub type Grandpa = polkadot_sdk::pallet_grandpa;
-
-    #[runtime::pallet_index(5)]
-    pub type Reputation = crate::pallet_reputation;
-    #[runtime::pallet_index(6)]
-    pub type Projects = crate::pallet_projects;
-    #[runtime::pallet_index(7)]
-    pub type Governance = crate::pallet_governance;
 }
 
-use polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig;
-
-#[derive_impl(SolochainDefaultConfig)]
+#[derive_impl(polkadot_sdk::frame_system::config_preludes::SolochainDefaultConfig)]
 impl polkadot_sdk::frame_system::Config for Runtime {
     type Block = Block;
     type AccountData = polkadot_sdk::pallet_balances::AccountData<Balance>;
 }
-
-impl pallet_reputation::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-impl pallet_projects::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-impl pallet_governance::Config for Runtime { type RuntimeEvent = RuntimeEvent; }
-
-use polkadot_sdk::pallet_timestamp;
 
 impl polkadot_sdk::pallet_timestamp::Config for Runtime {
     type Moment = u64;
@@ -103,7 +82,6 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type MaxFreezes = polkadot_sdk::frame_support::traits::ConstU32<8>;
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
-    type DoneSlashHandler = polkadot_sdk::frame_support::traits::ConstBool<false>;
 }
 
 impl polkadot_sdk::pallet_aura::Config for Runtime {
@@ -111,7 +89,7 @@ impl polkadot_sdk::pallet_aura::Config for Runtime {
     type DisabledValidators = ();
     type MaxAuthorities = polkadot_sdk::frame_support::traits::ConstU32<32>;
     type AllowMultipleBlocksPerSlot = polkadot_sdk::frame_support::traits::ConstBool<false>;
-    type SlotDuration = polkadot_sdk::frame_support::traits::ConstU64<3000>;
+    type SlotDuration = polkadot_sdk::pallet_timestamp::SlotDuration<Self>;
 }
 
 impl polkadot_sdk::pallet_grandpa::Config for Runtime {
@@ -132,7 +110,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     impl_version: 1,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1,
-    system_version: 1,
+    state_version: 1,
 };
 
 impl_runtime_apis! {
@@ -184,14 +162,14 @@ impl_runtime_apis! {
         fn decode_session_keys(_encoded: Vec<u8>) -> Option<Vec<(Vec<u8>, polkadot_sdk::sp_core::crypto::KeyTypeId)>> { None }
     }
 
-impl polkadot_sdk::sp_consensus_aura::AuraApi<Block, polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> for Runtime {
-    fn slot_duration() -> polkadot_sdk::sp_consensus_aura::SlotDuration {
-        polkadot_sdk::sp_consensus_aura::SlotDuration::from_millis(3000)
+    impl polkadot_sdk::sp_consensus_aura::AuraApi<Block, polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> for Runtime {
+        fn slot_duration() -> polkadot_sdk::sp_consensus_aura::SlotDuration {
+            polkadot_sdk::sp_consensus_aura::SlotDuration::from_millis(3000)
+        }
+        fn authorities() -> Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
+            Aura::authorities().into_inner()
+        }
     }
-    fn authorities() -> Vec<polkadot_sdk::sp_consensus_aura::sr25519::AuthorityId> {
-        Aura::authorities().into_inner()
-    }
-}
 
     impl polkadot_sdk::sp_consensus_grandpa::GrandpaApi<Block> for Runtime {
         fn grandpa_authorities() -> polkadot_sdk::sp_consensus_grandpa::AuthorityList {
