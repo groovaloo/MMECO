@@ -1,0 +1,18 @@
+{
+  "status": "disconnected",
+  "stats": {
+    "events_processed": 3,
+    "sync_operations": 1,
+    "errors": 0,
+    "last_sync": "2026-03-21 12:54:43.204697",
+    "connected_agents": 5
+  },
+  "connected_agents": [
+    "keep_alive",
+    "error_detector",
+    "memory_manager",
+    "alert_system",
+    "docs_manager"
+  ],
+  "last_save": "2026-03-21T12:57:04.245691"
+}

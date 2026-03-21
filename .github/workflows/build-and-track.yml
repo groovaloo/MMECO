@@ -1,0 +1,65 @@
+name: Build and Track Errors
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: 1.88.0
+
+    - name: Add wasm target
+      run: rustup target add wasm32-unknown-unknown
+
+    - name: Cache cargo registry
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: blockchain-core
+
+    - name: Build project
+      run: |
+        cd blockchain-core
+        cargo build --release -p mmeco-node 2>&1 | tee build.log
+    
+    - name: Extract errors
+      if: failure()
+      run: |
+        echo "## Build Errors" >> $GITHUB_STEP_SUMMARY
+        grep -E "^error" blockchain-core/build.log >> $GITHUB_STEP_SUMMARY || echo "No errors found" >> $GITHUB_STEP_SUMMARY
+
+    - name: Update error tracker
+      if: failure()
+      run: |
+        mkdir -p docs/internal/error-tracker
+        TIMESTAMP=$(date +"%Y-%m-%d %H:%M")
+        BRANCH=${GITHUB_REF#refs/heads/}
+        echo "" >> docs/internal/error-tracker/all-errors.md
+        echo "---" >> docs/internal/error-tracker/all-errors.md
+        echo "## Erro de Build - $TIMESTAMP - Branch: $BRANCH" >> docs/internal/error-tracker/all-errors.md
+        echo "" >> docs/internal/error-tracker/all-errors.md
+        echo "### Erro:" >> docs/internal/error-tracker/all-errors.md
+        echo '```' >> docs/internal/error-tracker/all-errors.md
+        grep -E "^error" blockchain-core/build.log 2>/dev/null | head -10 >> docs/internal/error-tracker/all-errors.md || echo "Erro desconhecido" >> docs/internal/error-tracker/all-errors.md
+        echo '```' >> docs/internal/error-tracker/all-errors.md
+        echo "" >> docs/internal/error-tracker/all-errors.md
+        echo "Status: 🔴 NOVO - Requer análise" >> docs/internal/error-tracker/all-errors.md
+
+    - name: Upload build log
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-log
+        path: blockchain-core/build.log
+        retention-days: 7

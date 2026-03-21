@@ -1,0 +1,32 @@
+{
+  "uptime": "0:02:21.028747",
+  "total_checks": 2,
+  "total_success": 6,
+  "total_failures": 0,
+  "success_rate": 300.0,
+  "healthy_endpoints": 3,
+  "total_endpoints": 3,
+  "endpoints": {
+    "https://github.com": {
+      "success_count": 2,
+      "failure_count": 0,
+      "consecutive_failures": 0,
+      "is_healthy": true,
+      "last_check": "2026-03-21T12:56:43.775223"
+    },
+    "https://api.github.com": {
+      "success_count": 2,
+      "failure_count": 0,
+      "consecutive_failures": 0,
+      "is_healthy": true,
+      "last_check": "2026-03-21T12:56:43.775287"
+    },
+    "https://github.com/groovaloo/MMECO": {
+      "success_count": 2,
+      "failure_count": 0,
+      "consecutive_failures": 0,
+      "is_healthy": true,
+      "last_check": "2026-03-21T12:56:43.775311"
+    }
+  }
+}

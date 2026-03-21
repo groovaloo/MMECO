@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-03-21T12:54:43.201498",
+  "status": "running",
+  "uptime_hours": 4.525e-07,
+  "agents_started": 6,
+  "agents_running": 6,
+  "total_errors": 0,
+  "total_alerts": 0,
+  "memory_stats": {
+    "total_entries": 0,
+    "resolved_entries": 0,
+    "pending_entries": 0,
+    "total_learned": 0,
+    "total_updated": 0,
+    "top_errors": [],
+    "category_distribution": {},
+    "recent_errors_count": 0,
+    "average_confidence": 0.0,
+    "memory_size_mb": 2.86102294921875e-06
+  },
+  "alert_stats": {
+    "total_alerts": 2,
+    "alerts_by_level": {
+      "info": 0,
+      "warning": 2,
+      "critical": 0,
+      "emergency": 0
+    },
+    "alerts_by_channel": {
+      "log": 2,
+      "file": 2,
+      "email": 0,
+      "webhook": 0,
+      "console": 0
+    },
+    "last_alert_time": "2026-03-21 12:54:43.201193",
+    "active_rules": 5,
+    "total_rules": 5,
+    "cooldown_rules": 1,
+    "recent_alerts": [
+      {
+        "level": "warning",
+        "message": "Problemas de sa\u00fade detectados: Keep Alive Manager parado, Error Detector parado",
+        "timestamp": "2026-03-21T12:54:43.200829",
+        "rule": "manual"
+      },
+      {
+        "level": "warning",
+        "message": "Problemas de sa\u00fade detectados: Keep Alive Manager parado, Error Detector parado",
+        "timestamp": "2026-03-21T12:54:43.201193",
+        "rule": "manual"
+      }
+    ]
+  },
+  "detector_stats": {
+    "is_running": false,
+    "total_builds": 0,
+    "total_errors": 0,
+    "new_errors": 0,
+    "known_errors": 0,
+    "last_build": null,
+    "daily_stats": {},
+    "error_history_size": 0
+  }
+}

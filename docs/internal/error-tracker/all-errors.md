@@ -1,0 +1,612 @@
+
+
+## [2026-03-21 12:43:15] ERRO_TESTE_OK
+
+**Mensagem:** Agora o robo sabe escrever
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+## [2026-03-21 13:40:18] E0599
+
+**Mensagem:** the function or associated item `execute_block` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:40:18] E0599
+
+**Mensagem:** the function or associated item `initialize_block` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:40:18] E0599
+
+**Mensagem:** the function or associated item `apply_extrinsic` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:40:18] E0599
+
+**Mensagem:** the function or associated item `finalize_block` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:40:18] E0599
+
+**Mensagem:** the function or associated item `validate_transaction` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:40:18] E0599
+
+**Mensagem:** the function or associated item `offchain_worker` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+## [2026-03-21 13:42:14] E0599
+
+**Mensagem:** the function or associated item `execute_block` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:42:14] E0599
+
+**Mensagem:** the function or associated item `initialize_block` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:42:14] E0599
+
+**Mensagem:** the function or associated item `apply_extrinsic` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:42:14] E0599
+
+**Mensagem:** the function or associated item `finalize_block` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:42:14] E0599
+
+**Mensagem:** the function or associated item `validate_transaction` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 13:42:14] E0599
+
+**Mensagem:** the function or associated item `offchain_worker` exists for struct `Executive<Runtime, ..., ..., ..., ...>`, but its trait bounds were not satisfied
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+## [2026-03-21 14:55:44] E0432
+
+**Mensagem:** unresolved imports `crate::traits::MaybeSerialize`, `crate::traits::MaybeSerializeDeserialize`
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0432
+
+**Mensagem:** unresolved import `crate::traits::MaybeDisplay`
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0432
+
+**Mensagem:** unresolved import `crate::traits::MaybeDisplay`
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0432
+
+**Mensagem:** unresolved import `crate::traits::MaybeDisplay`
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerializeDeserialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerializeDeserialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeDisplay` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeFromStr` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerializeDeserialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeDisplay` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeFromStr` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerializeDeserialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeFromStr` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeDisplay` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerializeDeserialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeFromStr` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeDisplay` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0405
+
+**Mensagem:** cannot find trait `MaybeSerializeDeserialize` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---
+
+
+## [2026-03-21 14:55:44] E0425
+
+**Mensagem:** cannot find type `Tuple` in this scope
+
+**Localização:** blockchain-core/runtime/src/lib.rs:?
+
+**Categorias:** Desconhecida
+
+**Confiança:** 10000%
+
+**Contexto:** Nenhum
+
+---

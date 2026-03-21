@@ -1,0 +1,20 @@
+{
+  "sdk_integration": {
+    "last_sync": "2026-03-21T12:54:43.204699",
+    "agents_connected": [
+      "keep_alive",
+      "error_detector",
+      "memory_manager",
+      "alert_system",
+      "docs_manager"
+    ],
+    "sdk_stats": {
+      "events_processed": 0,
+      "sync_operations": 1,
+      "errors": 0,
+      "last_sync": "2026-03-21 12:54:43.204697",
+      "connected_agents": 5
+    },
+    "bridge_status": "syncing"
+  }
+}

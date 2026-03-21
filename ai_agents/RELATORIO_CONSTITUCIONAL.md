@@ -15,7 +15,7 @@
 **VERIFICAÇÃO:** ✅ **CONFORME**
 
 ### Localização no Código:
-- **Arquivo:** `ai-agents/sistema_territorial.py`
+- **Arquivo:** `ai_agents/sistema_territorial.py`
 - **Linhas:** 115-120 (development_values)
 
 ```python
@@ -43,7 +43,7 @@ self.development_values = {
 **VERIFICAÇÃO:** ✅ **CONFORME**
 
 ### Localização no Código:
-- **Arquivo:** `ai-agents/sistema_financeiro.py`
+- **Arquivo:** `ai_agents/sistema_financeiro.py`
 - **Linhas:** 105-110 (configurar_usuario_nuno)
 
 ```python
@@ -70,7 +70,7 @@ def configurar_usuario_nuno(self):
 **VERIFICAÇÃO:** ✅ **CONFORME**
 
 ### Localização no Código:
-- **Arquivo:** `ai-agents/sistema_financeiro.py`
+- **Arquivo:** `ai_agents/sistema_financeiro.py`
 - **Linhas:** 25-34 (Escalao Enum)
 
 ```python
@@ -153,7 +153,7 @@ def prevenir_gasto_duplo(self, tarefa: Tarefa) -> bool:
 ### **ESTRUTURA ATUAL - ESTÁVEL E COERENTE**
 
 ```
-ai-agents/
+ai_agents/
 ├── sistema_financeiro.py          ✅ Módulo Fiscal v1.3 (ESTÁVEL)
 ├── sistema_territorial.py         ✅ Lastro Territorial (ESTÁVEL)
 ├── sistema_integridade_privacidade.py ✅ Blockchain + Agentes (ESTÁVEL)
