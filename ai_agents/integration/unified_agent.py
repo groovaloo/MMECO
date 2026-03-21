@@ -1,11 +1,11 @@
 import asyncio
 import logging
-from ai_agents.sdk_agents.config import Config
-from ai_agents.sdk_agents.memory_manager import MemoryManager
-from ai_agents.sdk_agents.alert_system import AlertSystem
-from ai_agents.sdk_agents.documentation_manager import DocumentationManager
-from ai_agents.sdk_agents.error_detector import ErrorDetector
-from ai_agents.integration.sdk_dao_bridge import SDKDAOBridge
+from sdk_agents.config import Config
+from sdk_agents.memory_manager import MemoryManager
+from sdk_agents.alert_system import AlertSystem
+from sdk_agents.documentation_manager import DocumentationManager
+from sdk_agents.error_detector import ErrorDetector
+from integration.sdk_dao_bridge import SDKDAOBridge
 
 logger = logging.getLogger("unified_agent")
 

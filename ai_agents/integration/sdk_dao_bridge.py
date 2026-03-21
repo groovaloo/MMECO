@@ -1,7 +1,7 @@
 import logging
 import json
 from pathlib import Path
-from ai_agents.sdk_agents.config import Config
+from sdk_agents.config import Config
 
 logger = logging.getLogger("sdk_dao_bridge")
 

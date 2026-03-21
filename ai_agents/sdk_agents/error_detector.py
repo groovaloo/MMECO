@@ -2,8 +2,8 @@ import asyncio
 import logging
 import re
 from datetime import datetime
-from ai_agents.sdk_agents.config import Config
-from ai_agents.sdk_agents.documentation_manager import DocumentationManager
+from sdk_agents.config import Config
+from sdk_agents.documentation_manager import DocumentationManager
 
 logger = logging.getLogger("error_detector")
 

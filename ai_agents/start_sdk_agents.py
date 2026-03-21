@@ -2,7 +2,7 @@ import asyncio
 import logging
 import signal
 import sys
-from ai_agents.integration.unified_agent import UnifiedAgent
+from integration.unified_agent import UnifiedAgent
 
 # Configuração de Logging
 logging.basicConfig(
