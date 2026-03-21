@@ -13,7 +13,7 @@
 **Problema:**
 ```rust
 // ERRADO
-type Executive = polkadot_sdk::frame_executive::Executive
+type Executive = polkadot_sdk::frame_executive::Executive<
     Runtime,
 ```
 
