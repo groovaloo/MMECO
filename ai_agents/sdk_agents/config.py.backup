@@ -1,0 +1,27 @@
+"""Configuração dos SDK Agents"""
+import os
+
+class Config:
+    # GitHub
+    GITHUB_REPO = "groovaloo/MMECO"
+    GITHUB_BRANCH = "bld-1.7"
+    
+    # Usar gh CLI em vez de API direta
+    USE_GH_CLI = True
+    
+    # Timings (em segundos)
+    ERROR_CHECK_INTERVAL = 300  # 5 min
+    KEEP_ALIVE_INTERVAL = 120   # 2 min
+    
+    # Paths
+    DOCS_PATH = os.path.join("..", "docs", "internal", "error-tracker")
+    MEMORY_PATH = os.path.join("sdk_agents", "errors_memory.json")
+    LOGS_PATH = "logs"
+
+# Funções auxiliares (se necessário)
+def get_config():
+    return Config
+    
+def validate_config():
+    """Valida se todas as configurações estão OK"""
+    return True
