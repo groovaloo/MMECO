@@ -49,3 +49,4 @@ jobs:
         with:
           name: mmeco-node-final
           path: blockchain-core/target/release/mmeco-node
+          
