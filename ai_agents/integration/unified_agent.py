@@ -15,7 +15,7 @@ class UnifiedAgent:
         self.memory_manager = MemoryManager()
         self.alert_system = AlertSystem()
         self.docs_manager = DocumentationManager()
-        self.error_detector = ErrorDetector()
+        self.error_detector = ErrorDetector(self.memory_manager, Config)
         self.dao_bridge = SDKDAOBridge()
         self.is_running = False
 
