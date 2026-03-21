@@ -126,7 +126,7 @@ impl polkadot_sdk::pallet_balances::Config for Runtime {
     type AccountStore = polkadot_sdk::frame_system::Pallet<Runtime>;
     type WeightInfo = ();
     type FreezeIdentifier = RuntimeFreezeReason;
-    type MaxFreezes = ConstU32;
+    type MaxFreezes = ConstU32<50>;
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
     
