@@ -29,3 +29,30 @@ blockchain-core/target/
 **/.cargo/
 blockchain-core/target/
 **/.cargo/registry/
+
+# Build artifacts (NUNCA commitar)
+blockchain-core/target/
+**/target/
+
+# Agentes - ficheiros temporários
+ai-agents/logs/*.json
+ai-agents/**/*_memory.json
+bridge-state.json
+keep-alive-python.stats.json
+sync-data-*.json
+sync-report-*.md
+unified-agent-report-*.json
+
+# Scripts temporários
+check_build_result.sh
+update_teach_fixed.py
+cleanup*.sh
+
+# Compressed files
+*.tar.gz
+*.zip
+
+# IDE
+.vscode/
+*.swp
+*.swo
