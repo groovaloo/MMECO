@@ -54,7 +54,7 @@ class MemoryManager:
         self.config = config or get_config()
         self.memory_db: Dict[str, MemoryEntry] = {}
         self.error_tracker_files = self.config.get_error_files()
-        self.memory_file = self.config.get_memory_config()['file']
+        self.memory_file = Path(self.config.get_memory_config()['file'])
         
         # Estatísticas (ANTES de load_memory!)
         self.stats = {

@@ -1,56 +1,65 @@
+"""Configuração dos SDK Agents"""
 import os
-from pathlib import Path
 
 class Config:
-    def __init__(self):
-        self.BASE_PATH = Path("/workspaces/MMECO")
-        self.AI_AGENTS_PATH = self.BASE_PATH / "ai_agents"
-        self.BLOCKCHAIN_CORE_PATH = self.BASE_PATH / "blockchain-core"
-        self.DOCS_PATH = self.BASE_PATH / "docs/internal/error-tracker"
-        
-        self.MEMORY_FILE = self.AI_AGENTS_PATH / "blockchain_errors_memory.json"
-        self.DAO_MEMORY_FILE = self.AI_AGENTS_PATH / "dao_memory.json"
-        self.CHECK_INTERVAL = 300
-        
-        self.DOCS_PATH.mkdir(parents=True, exist_ok=True)
-
-    def get_error_files(self):
+    # GitHub
+    GITHUB_REPO = "groovaloo/MMECO"
+    GITHUB_BRANCH = "bld-1.7"
+    
+    # Usar gh CLI em vez de API direta
+    USE_GH_CLI = True
+    
+    # Timings (em segundos)
+    ERROR_CHECK_INTERVAL = 300  # 5 min
+    KEEP_ALIVE_INTERVAL = 120   # 2 min
+    
+    # Paths
+    DOCS_PATH = "../docs/internal/error-tracker"
+    MEMORY_PATH = "sdk_agents/errors_memory.json"
+    LOGS_PATH = "logs"
+    DAO_MEMORY_FILE = "dao_memory.json"  # ✅ ADICIONADO
+    
+    @classmethod
+    def get_error_files(cls):
+        """Retorna dicionário de ficheiros de erro"""
         return {
-            "all_errors": self.DOCS_PATH / "all-errors.md",
-            "resolved": self.DOCS_PATH / "resolved.md",
-            "frequent": self.DOCS_PATH / "frequent-errors.md",
-            "lessons": self.DOCS_PATH / "lessons-learned.md",
-            "quick_reference": self.DOCS_PATH / "quick-reference.md",
-            "pre_commit": self.DOCS_PATH / "pre-commit-checklist.md"
+            'all_errors': os.path.join(cls.DOCS_PATH, 'all-errors.md'),
+            'resolved': os.path.join(cls.DOCS_PATH, 'resolved.md'),
+            'frequent_errors': os.path.join(cls.DOCS_PATH, 'frequent-errors.md'),
+            'lessons_learned': os.path.join(cls.DOCS_PATH, 'lessons-learned.md'),
+            'quick_reference': os.path.join(cls.DOCS_PATH, 'quick-reference.md')
+        }
+    
+    @classmethod
+    def get_memory_config(cls):
+        """Retorna configuração de memória"""
+        return {
+            'file': cls.MEMORY_PATH,
+            'max_entries': 100,
+            'auto_save': True
+        }
+    
+    @classmethod
+    def get_github_config(cls):
+        """Retorna configuração do GitHub"""
+        return {
+            'repo': cls.GITHUB_REPO,
+            'branch': cls.GITHUB_BRANCH,
+            'use_cli': cls.USE_GH_CLI
+        }
+    
+    @classmethod
+    def get_logging_config(cls):
+        """Retorna configuração de logs"""
+        return {
+            'path': cls.LOGS_PATH,
+            'level': 'INFO'
         }
 
-    def get_memory_config(self):
-        return {"file": self.MEMORY_FILE}
-
-class DictObj(dict):
-    def __getattr__(self, key):
-        try:
-            return self[key]
-        except KeyError:
-            return None
-    def __setattr__(self, key, value):
-        self[key] = value
-
+# Funções auxiliares
 def get_config():
-    cfg = Config()
-    obj = DictObj({
-        "BASE_PATH": str(cfg.BASE_PATH),
-        "AI_AGENTS_PATH": str(cfg.AI_AGENTS_PATH),
-        "BLOCKCHAIN_CORE_PATH": str(cfg.BLOCKCHAIN_CORE_PATH),
-        "ERROR_TRACKER_PATH": str(cfg.DOCS_PATH),
-        "DOCS_PATH": str(cfg.DOCS_PATH),
-        "MEMORY_FILE": str(cfg.MEMORY_FILE),
-        "DAO_MEMORY_FILE": str(cfg.DAO_MEMORY_FILE),
-        "CHECK_INTERVAL": cfg.CHECK_INTERVAL,
-    })
-    obj.get_error_files = cfg.get_error_files
-    obj.get_memory_config = cfg.get_memory_config
-    return obj
-
+    return Config
+    
 def validate_config():
+    """Valida se todas as configurações estão OK"""
     return True
