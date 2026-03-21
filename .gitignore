@@ -25,3 +25,5 @@ __pycache__/
 # Logs
 *.log
 .aider*
+blockchain-core/target/
+**/.cargo/
