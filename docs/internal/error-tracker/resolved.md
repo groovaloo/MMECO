@@ -81,3 +81,30 @@ pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall
 ---
 
 *Total de erros resolvidos: 3 (1 sintaxe + 7 erros de compilação relacionados)*
+
+## [2026-03-22] E0599
+
+**Problema:** E0599
+
+**Solução:**
+Aguardando análise
+
+**Categorias:** Rust
+
+**Confiança:** 80%
+
+---
+
+
+## [2026-03-22] E0437
+
+**Problema:** E0437
+
+**Solução:**
+Aguardando análise
+
+**Categorias:** Rust
+
+**Confiança:** 80%
+
+---

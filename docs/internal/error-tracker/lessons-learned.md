@@ -83,3 +83,15 @@ pub trait Config: frame_system::Config
 **Aplicação:** Aplicar este conhecimento em desenvolvimento futuro
 
 ---
+
+## Rust
+
+**Tipo:** category
+
+**Data:** 2026-03-22
+
+**Descrição:** Lição aprendida a partir de erros recorrentes
+
+**Aplicação:** Aplicar este conhecimento em desenvolvimento futuro
+
+---

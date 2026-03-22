@@ -47,7 +47,7 @@ class DocumentationManager:
     
     def __init__(self, config=None):
         self.config = config or get_config()
-        self.error_tracker_files = self.config.get_error_files()
+        self.error_tracker_files = {k: Path(v) for k, v in self.config.get_error_files().items()}
         
         # Contadores de atualização
         self.stats = {
@@ -168,7 +168,7 @@ class DocumentationManager:
         if not resolved_errors:
             return
         
-        file_path = self.error_tracker_files['resolved_errors']
+        file_path = self.error_tracker_files['resolved']
         
         # Carregar conteúdo existente
         existing_content = ""
