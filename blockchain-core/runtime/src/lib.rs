@@ -32,7 +32,7 @@ pub type Hash = polkadot_sdk::sp_core::H256;
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 pub type Nonce = u32;
 
-pub type SignedExtra = (
+pub type TxExtension = (
     polkadot_sdk::frame_system::CheckNonZeroSender<Runtime>,
     polkadot_sdk::frame_system::CheckSpecVersion<Runtime>,
     polkadot_sdk::frame_system::CheckTxVersion<Runtime>,
@@ -42,7 +42,7 @@ pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckWeight<Runtime>,
 );
 
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
+pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, TxExtension>;
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 
 pub const VERSION: RuntimeVersion = RuntimeVersion {
