@@ -87,7 +87,6 @@ impl polkadot_sdk::frame_system::Config for Runtime {
     type AccountId = AccountId;
     type Lookup = polkadot_sdk::sp_runtime::traits::AccountIdLookup<AccountId, ()>;
     type Block = Block;
-    type Header = Header;
     type RuntimeEvent = RuntimeEvent;
     type BlockHashCount = ConstU32<256>;
     type Version = Version;

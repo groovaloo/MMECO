@@ -19,7 +19,7 @@ class ErrorDetector:
         try:
             # Buscar último build
             result = subprocess.run(
-                ['gh', 'run', 'list', '--limit', '1', '--json', 'databaseId,conclusion,status'],
+                ['gh', 'run', 'list', '--limit', '1', '--workflow', 'rust.yml', '--json', 'databaseId,conclusion,status'],
                 capture_output=True, text=True, timeout=10, cwd='/workspaces/MMECO'
             )
             
