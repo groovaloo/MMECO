@@ -40,7 +40,6 @@ pub type SignedExtra = (
     polkadot_sdk::frame_system::CheckEra<Runtime>,
     polkadot_sdk::frame_system::CheckNonce<Runtime>,
     polkadot_sdk::frame_system::CheckWeight<Runtime>,
-    polkadot_sdk::pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
 );
 
 pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<AccountId, RuntimeCall, Signature, SignedExtra>;
