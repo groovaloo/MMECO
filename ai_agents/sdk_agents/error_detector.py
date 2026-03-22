@@ -119,7 +119,7 @@ class ErrorDetector:
                         'code': key,
                         'message': entry.error_key,
                         'location': 'blockchain-core/runtime/src/lib.rs',
-                        'timestamp': entry.timestamp,
+                        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                         'context': entry.context,
                         'solution': entry.solution,
                         'confidence': entry.confidence,

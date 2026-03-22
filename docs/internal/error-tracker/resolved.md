@@ -108,3 +108,30 @@ Aguardando análise
 **Confiança:** 80%
 
 ---
+
+## [2026-03-22] E0599
+
+**Problema:** E0599
+
+**Solução:**
+Aguardando análise
+
+**Categorias:** Rust, Compilation
+
+**Confiança:** 80%
+
+---
+
+
+## [2026-03-22] E0437
+
+**Problema:** E0437
+
+**Solução:**
+Aguardando análise
+
+**Categorias:** Rust, Compilation
+
+**Confiança:** 80%
+
+---
