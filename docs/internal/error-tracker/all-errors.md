@@ -697,3 +697,31 @@
 **Contexto:** GitHub Actions build #23404218106
 
 ---
+
+## [2026-03-22 15:11:31] E0107
+
+**Mensagem:** error[E0107]: missing generics for struct ConstU32
+
+**Localização:** Desconhecido:?
+
+**Categorias:** Sintaxe, Tipos e Traits
+
+**Confiança:** 90%
+
+**Contexto:** claude_analysis
+
+---
+
+## [2026-03-22 15:11:31] None
+
+**Mensagem:** UncheckedExtrinsic<u32> should be UncheckedExtrinsic<AccountId>
+
+**Localização:** Desconhecido:?
+
+**Categorias:** 
+
+**Confiança:** 90%
+
+**Contexto:** claude_analysis
+
+---
