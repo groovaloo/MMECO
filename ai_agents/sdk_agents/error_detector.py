@@ -105,6 +105,35 @@ class ErrorDetector:
             # Atualizar documentação
             self.logger.info("📄 Atualizando documentação...")
             
+            # FORÇAR atualização da documentação
+            try:
+                from sdk_agents.documentation_manager import DocumentationManager
+                from datetime import datetime
+                
+                doc_mgr = DocumentationManager(self.config)
+                
+                # Preparar lista de erros para documentação
+                errors_for_doc = []
+                for key, entry in self.memory.memory_db.items():
+                    errors_for_doc.append({
+                        'code': key,
+                        'message': entry.error_key,
+                        'location': 'blockchain-core/runtime/src/lib.rs',
+                        'timestamp': entry.timestamp,
+                        'context': entry.context,
+                        'solution': entry.solution,
+                        'confidence': entry.confidence,
+                        'count': entry.count,
+                        'categories': ['Rust', 'Compilation']
+                    })
+                
+                if errors_for_doc:
+                    doc_mgr.update_error_tracker(errors_for_doc)
+                    self.logger.info(f"✅ Documentação atualizada com {len(errors_for_doc)} erros!")
+                    
+            except Exception as doc_err:
+                self.logger.error(f"❌ Erro ao atualizar docs: {doc_err}")
+            
         except Exception as e:
             self.logger.error(f"💥 Erro ao extrair erros: {e}")
             
